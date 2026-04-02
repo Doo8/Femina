@@ -940,6 +940,7 @@ const MINIQ_EXPLAIN={
 };
 
 function miniq(optId,chosen,correct,fbId,nextId){
+  saveMiniResult(fbId, chosen, correct); // сохраняем результат
   const opts=document.querySelectorAll('#'+optId+' .q-opt');
   opts.forEach(o=>{o.classList.add('answered');o.onclick=null;});
   opts[chosen].classList.add(chosen===correct?'correct':'wrong');
@@ -1129,6 +1130,67 @@ function submitCode(){
   }
 }
 
+// ── GOOGLE SHEETS INTEGRATION ─────────────────────────────
+// Замени эту ссылку на URL твоего Google Apps Script Web App
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzmvmVtd2JsXZlPfyw68QH1SLXpSnOkMfcuVfxk5U0gsuvJTHILIbPK-1bBu0U55ur9/exec';
+
+// Хранение результатов мини-тестов
+const miniResults = {};
+
+function saveMiniResult(quizId, chosen, correct) {
+  miniResults[quizId] = {
+    answer: chosen,
+    correct: chosen === correct,
+  };
+}
+
+function sendToSheets() {
+  if (!SHEETS_URL || SHEETS_URL.includes('ВСТАВЬ')) return; // не отправлять если URL не задан
+
+  const name    = localStorage.getItem('femina_name') || '—';
+  const track   = localStorage.getItem('femina_track') === '1' ? 'Новая в Femina' : 'Участница Femina';
+  const score   = localStorage.getItem('femina_test_score') || '—';
+  const date    = new Date().toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'});
+  const open    = localStorage.getItem('femina_open_answer') || '—';
+  const refData = JSON.parse(localStorage.getItem('femina_refls') || '{}');
+
+  const reflLabels = {
+    1: 'Что значит держать свет',
+    2: 'Сложный уровень слушания',
+    3: 'Фраза языка Femina',
+    4: 'Ситуация аптечки, которая пугает',
+    5: 'Восстановление после встречи',
+    6: 'Чувства перед первой встречей',
+  };
+
+  const payload = {
+    name,
+    track,
+    date,
+    // Мини-тесты
+    quiz1: miniResults['q1-fb'] ? (miniResults['q1-fb'].correct ? '✓' : '✗') : '—',
+    quiz2: miniResults['q2-fb'] ? (miniResults['q2-fb'].correct ? '✓' : '✗') : '—',
+    quiz3: miniResults['q3-fb'] ? (miniResults['q3-fb'].correct ? '✓' : '✗') : '—',
+    // Итоговый тест
+    finalScore: score,
+    openAnswer: open,
+    // Рефлексии
+    refl1: refData[1] || '—',
+    refl2: refData[2] || '—',
+    refl3: refData[3] || '—',
+    refl4: refData[4] || '—',
+    refl5: refData[5] || '—',
+    refl6: refData[6] || '—',
+  };
+
+  fetch(SHEETS_URL, {
+    method: 'POST',
+    mode: 'no-cors', // Google Apps Script требует no-cors
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  }).catch(() => {}); // молча игнорируем ошибки сети
+}
+
 function goToCert(){
   go('s-cert');
   const name=localStorage.getItem('femina_name')||userName||'Анна';
@@ -1136,6 +1198,8 @@ function goToCert(){
   document.getElementById('cert-name').textContent=name;
   const d=new Date();
   document.getElementById('cert-date').textContent=d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  // Отправить данные в Google Sheets
+  sendToSheets();
 }
 
 function dlCert(){
