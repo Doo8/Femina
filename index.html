@@ -1375,5 +1375,22 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 </script>
+
+<script>
+// Сообщаем высоту родительской странице (для iframe на Tilda)
+function reportHeight(){
+  var h = document.documentElement.scrollHeight;
+  window.parent.postMessage({type:'femina-height', height: h}, '*');
+}
+// Отправляем при каждом переходе между экранами
+var _origGo = window.go;
+window.go = function(id){
+  _origGo(id);
+  setTimeout(reportHeight, 100);
+  setTimeout(reportHeight, 500);
+};
+window.addEventListener('load', reportHeight);
+window.addEventListener('resize', reportHeight);
+</script>
 </body>
 </html>
