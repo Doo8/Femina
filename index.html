@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>femina Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Brandbook palette — тёплая терракота + пудровые + сине-серый */
+  --terra:#C4694A;       /* основной акцент — терракота */
+  --terra-lt:#D4896E;    /* светлая терракота */
+  --terra-bg:#F2E0D8;    /* фон терракотовый */
+  --terra-pale:#F9EDE8;  /* очень светлый фон акцентных блоков */
+  --peach:#E8C4A8;       /* пастельный персик */
+  --peach-bg:#FDF4EE;    /* персиковый фон */
+  --sage:#4A7A72;        /* сине-серый акцент */
+  --sage-lt:#8FA898;     /* светлый sage */
+  --sage-bg:#E8F0EC;     /* фон sage */
+  --cream:#F5EDE0;       /* основной фон страницы */
+  --beige:#EAE0D4;       /* разделители, рамки */
+  --sand:#D6C8B8;        /* приглушённые рамки */
+  --white:#FDFAF6;       /* фон карточек */
+  --text-dk:#3D3028;     /* основной текст */
+  --text-md:#6B5A4E;     /* вторичный текст */
+  --text-lt:#9E8C80;     /* метки, подписи */
+  --r:10px;              /* скругление — мягче, из гайдов */
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Rubik',sans-serif;font-weight:300;background:var(--cream);color:var(--text-dk);min-height:100vh;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+
+/* TOP BAR */
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--white);border-bottom:1px solid var(--beige);position:sticky;top:0;z-index:10;}
+.logo{font-family:'Rubik',sans-serif;font-size:17px;font-weight:500;color:var(--terra);letter-spacing:.22em;text-transform:uppercase;}
+.top-step{font-size:11px;color:var(--text-lt);font-weight:300;}
+.top-badge{font-size:11px;font-weight:400;padding:4px 12px;border-radius:100px;background:var(--terra-bg);color:var(--terra);}
+
+/* PROGRESS */
+/* PROGRESS — roadmap style */
+.prog-wrap{background:var(--white);border-bottom:1px solid var(--beige);padding:0;}
+.prog-track-row{padding:0 20px;padding-top:10px;}
+.prog-track{height:3px;background:var(--beige);border-radius:100px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:100px;background:var(--terra);transition:width .5s ease;}
+.prog-steps{display:flex;padding:10px 12px 12px;gap:4px;}
+.p-step{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:default;position:relative;padding:4px 2px;
+  transition:opacity .2s;
+}
+.p-step.done{cursor:pointer;}
+.p-step.done:hover .p-dot{background:var(--terra);transform:scale(1.15);}
+.p-step.done:hover .p-label{color:var(--terra);}
+.p-dot{
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid var(--sand);background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Rubik',sans-serif;font-size:10px;font-weight:500;
+  color:var(--text-lt);transition:all .25s;flex-shrink:0;
+}
+.p-step.done .p-dot{background:var(--sage);border-color:var(--sage);color:#fff;}
+.p-step.cur .p-dot{background:var(--terra);border-color:var(--terra);color:#fff;}
+.p-label{font-size:9px;color:var(--text-lt);letter-spacing:.02em;font-weight:300;text-align:center;line-height:1.3;transition:color .2s;}
+.p-step.done .p-label{color:var(--sage);}
+.p-step.cur .p-label{color:var(--terra);font-weight:500;}
+/* connector line between dots */
+.p-step:not(:last-child)::after{
+  content:'';position:absolute;
+  top:14px;left:calc(50% + 13px);
+  width:calc(100% - 26px);height:2px;
+  background:var(--beige);z-index:0;
+}
+.p-step.done:not(:last-child)::after{background:var(--sage-lt);}
+.p-dot{position:relative;z-index:1;}
+
+/* LAYOUT */
+.content{max-width:640px;margin:0 auto;padding:24px 20px 48px;}
+.nav-row{display:flex;gap:10px;margin-top:28px;}
+.nav-row.center{justify-content:center;}
+.nav-row .btn-ghost{flex:none;}
+.nav-row .btn-primary{flex:1;}
+
+/* BUTTONS — из брендбука: скруглённые, не pill */
+.btn{font-family:'Rubik',sans-serif;font-size:14px;font-weight:400;padding:12px 24px;border-radius:8px;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--terra);color:#fff;flex:1;justify-content:center;}
+.btn-primary:hover:not(:disabled){background:#A8573A;}
+.btn-primary:disabled{background:var(--sand);cursor:not-allowed;pointer-events:none;opacity:.65;}
+.btn-ghost{background:var(--white);color:var(--text-md);border:1px solid var(--sand);padding:11px 18px;flex-shrink:0;border-radius:8px;}
+.btn-ghost:hover{border-color:var(--terra);color:var(--terra);}
+.btn-wide{width:100%;justify-content:center;margin-top:10px;}
+
+/* TYPOGRAPHY */
+.eyebrow{font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--text-lt);}
+.display{font-family:'Rubik',sans-serif;font-size:30px;font-weight:500;line-height:1.2;color:var(--text-dk);}
+.display-sm{font-family:'Rubik',sans-serif;font-size:22px;font-weight:500;line-height:1.25;color:var(--text-dk);}
+.body-text{font-size:15px;color:var(--text-md);line-height:1.75;font-weight:300;}
+.quote{font-family:'Rubik',sans-serif;font-size:18px;font-weight:300;font-style:italic;color:var(--text-dk);line-height:1.55;}
+
+/* CARDS */
+.card{background:var(--white);border-radius:var(--r);border:1px solid var(--beige);padding:18px 20px;margin-bottom:12px;}
+.card-cream{background:var(--cream);border-radius:var(--r);border:1px solid var(--sand);padding:18px 20px;margin-bottom:12px;}
+.card-teal{background:var(--sage-bg);border-radius:var(--r);border:1px solid var(--sage-lt);padding:18px 20px;margin-bottom:12px;}
+.card-coral{background:var(--terra-pale);border-radius:var(--r);border:1px solid var(--terra-bg);padding:18px 20px;margin-bottom:12px;}
+/* Аптечка — мягкий тёплый оттенок, не красный */
+.card-apt{background:#F7F0E8;border-radius:var(--r);border:1px solid var(--peach);padding:18px 20px;margin-bottom:12px;}
+.card-apt .apt-label{color:var(--text-md)!important;}
+.card-apt .body-text{color:var(--text-md)!important;}
+.card-apt .bubble.coral{background:rgba(255,255,255,.7)!important;border-color:var(--peach)!important;}
+.card-apt .bubble.coral .bubble-text{color:var(--sage)!important;}
+.card-apt .bubble.coral::before{color:var(--peach)!important;}
+.card-apt .copy-btn.cc{color:var(--sage)!important;}
+.card-apt [style*="color:var(--terra)"]{color:var(--text-md)!important;}
+.accent-line{border-left:3px solid var(--terra);padding-left:14px;margin:14px 0;}
+.accent-teal{border-left:3px solid var(--sage);padding-left:14px;margin:14px 0;}
+
+/* PRINCIPLE CARD */
+.p-card{display:flex;gap:12px;align-items:flex-start;background:var(--white);border-radius:var(--r);border:1px solid var(--beige);padding:14px;margin-bottom:8px;}
+.p-icon{width:34px;height:34px;border-radius:50%;background:var(--terra-bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.p-icon.teal{background:var(--sage-bg);}
+.p-title{font-size:14px;font-weight:500;color:var(--text-dk);margin-bottom:2px;}
+.p-text{font-size:13px;color:var(--text-md);line-height:1.55;font-weight:300;}
+
+/* SCRIPT BUBBLE */
+.bubble{background:var(--sage-bg);border-radius:var(--r);border:1px solid var(--sage-lt);padding:14px 16px 12px 30px;margin:10px 0;position:relative;}
+.bubble::before{content:'«';font-family:'Rubik',sans-serif;font-size:36px;color:var(--sage-lt);position:absolute;top:-2px;left:8px;line-height:1;font-weight:300;}
+.bubble-text{font-family:'Rubik',sans-serif;font-size:14px;font-style:italic;word-break:break-word;overflow-wrap:break-word;white-space:pre-wrap;font-weight:300;color:var(--sage);line-height:1.6;}
+.bubble.coral{background:rgba(255,255,255,.55);border-color:var(--terra-bg);}
+.bubble.coral .bubble-text{color:var(--terra);}
+.bubble.coral::before{color:var(--peach);}
+
+/* COPY BUTTON */
+.copy-btn{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--sage);margin-top:8px;cursor:pointer;font-weight:500;letter-spacing:.06em;background:none;border:none;font-family:'Rubik',sans-serif;text-transform:uppercase;padding:0;}
+.copy-btn:hover{opacity:.7;}
+.copy-btn.cc{color:var(--terra);}
+
+/* LIST ROWS */
+.do-row{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--beige);}
+.do-row:last-child{border-bottom:none;}
+.do-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.do-text{font-size:14px;color:var(--text-md);line-height:1.55;font-weight:300;}
+
+/* TIMING */
+.timing-row{display:flex;align-items:center;gap:12px;background:var(--white);border-radius:var(--r);border:1px solid var(--beige);padding:11px 13px;margin-bottom:7px;}
+.t-time{font-size:11px;color:var(--text-lt);min-width:78px;font-weight:300;}
+.t-bar-w{flex:1;}
+.t-bar{height:4px;border-radius:100px;background:var(--terra);}
+.t-name{font-size:13px;color:var(--text-dk);font-weight:300;}
+
+/* REFLECTION */
+.refl-box{background:var(--cream);border-radius:var(--r);border:1px solid var(--sand);padding:18px;margin-top:20px;}
+.refl-title{font-family:'Rubik',sans-serif;font-size:17px;font-weight:500;color:var(--text-dk);margin-bottom:2px;}
+.refl-sub{font-size:12px;color:var(--text-lt);margin-bottom:10px;font-weight:300;}
+.refl-q{font-size:14px;color:var(--text-dk);font-style:italic;margin-bottom:10px;font-weight:300;}
+textarea{width:100%;min-height:88px;border:1.5px solid var(--beige);border-radius:8px;background:var(--white);color:var(--text-dk);font-family:'Rubik',sans-serif;font-size:14px;font-weight:300;line-height:1.6;padding:11px 13px;resize:vertical;outline:none;transition:border-color .2s;}
+textarea:focus{border-color:var(--terra);}
+textarea::placeholder{color:var(--text-lt);}
+.refl-hint{font-size:12px;color:var(--terra);margin-top:5px;font-weight:300;}
+
+/* INPUTS */
+input[type=text]{width:100%;padding:12px 14px;border:1.5px solid var(--beige);border-radius:8px;background:var(--white);color:var(--text-dk);font-family:'Rubik',sans-serif;font-size:15px;font-weight:300;outline:none;transition:border-color .2s;}
+input[type=text]:focus{border-color:var(--terra);}
+input[type=text]::placeholder{color:var(--text-lt);}
+
+/* TRACK SELECT */
+.track-opt{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:var(--r);border:1.5px solid var(--beige);background:var(--white);cursor:pointer;transition:all .2s;margin-bottom:8px;}
+.track-opt:hover{border-color:var(--terra-lt);}
+.track-opt.sel{border-color:var(--terra);background:var(--terra-pale);}
+.t-radio{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--sand);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.track-opt.sel .t-radio{background:var(--terra);border-color:var(--terra);}
+.t-radio-inner{width:7px;height:7px;background:#fff;border-radius:50%;opacity:0;transition:opacity .2s;}
+.track-opt.sel .t-radio-inner{opacity:1;}
+.t-label{font-size:14px;color:var(--text-dk);font-weight:400;}
+.t-sub{font-size:12px;color:var(--text-lt);margin-top:1px;font-weight:300;}
+
+/* QUIZ */
+.quiz-q{font-family:'Rubik',sans-serif;font-size:20px;font-weight:400;line-height:1.35;color:var(--text-dk);margin-bottom:18px;}
+.q-opt{padding:13px 15px;border-radius:var(--r);border:1.5px solid var(--beige);background:var(--white);cursor:pointer;font-size:14px;font-weight:300;color:var(--text-dk);transition:all .2s;line-height:1.5;margin-bottom:8px;}
+.q-opt:hover:not(.answered){border-color:var(--terra-lt);background:var(--terra-pale);}
+.q-opt.correct{border-color:var(--sage);background:var(--sage-bg);color:var(--sage);}
+.q-opt.selected{border-color:var(--terra-lt);background:var(--terra-pale);}
+.q-multi-check{margin-right:6px;font-style:normal;}
+.q-multi{cursor:pointer;user-select:none;}
+.q-multi.selected{border-color:var(--terra);background:var(--terra-pale);}
+.q-opt.wrong{border-color:var(--terra);background:var(--terra-pale);color:var(--terra);}
+.q-fb{margin-top:12px;padding:12px 15px;border-radius:var(--r);font-size:14px;font-weight:300;line-height:1.55;display:none;}
+.q-fb.show{display:block;}
+.q-fb.ok{background:var(--sage-bg);color:var(--sage);}
+.q-fb.no{background:var(--terra-pale);color:var(--terra);}
+
+/* TEST DOTS */
+.test-dots{display:flex;gap:6px;margin-bottom:22px;}
+.t-dot{height:4px;flex:1;border-radius:100px;background:var(--beige);transition:background .3s;}
+.t-dot.done{background:var(--sage);}
+.t-dot.cur{background:var(--terra);}
+
+/* APTEYKA */
+.apt-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:10px 14px;background:var(--white);border-radius:8px;border:1px solid var(--beige);}
+.apt-counter{font-size:12px;color:var(--text-lt);font-weight:300;}
+.apt-arrows{display:flex;gap:7px;}
+.apt-arrow{width:40px;height:40px;border-radius:50%;border:2px solid var(--terra-lt);background:var(--terra-pale);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--terra);font-weight:500;transition:all .15s;}
+.apt-arrow:hover{border-color:var(--terra);background:var(--terra);color:#fff;}
+.apt-card{display:none;}
+.apt-card.active{display:block;}
+
+/* CHECKLIST */
+.chk-row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--beige);cursor:pointer;}
+.chk-row:last-child{border-bottom:none;}
+.chk-box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--sand);flex-shrink:0;margin-top:1px;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.chk-text{font-size:14px;color:var(--text-md);line-height:1.5;font-weight:300;}
+
+/* CERT */
+.cert-ring{width:68px;height:68px;border-radius:50%;border:2px solid var(--terra-bg);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
+.cert-inner{width:52px;height:52px;border-radius:50%;background:var(--terra-bg);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.cert-card{background:var(--white);border-radius:14px;border:1px solid var(--sand);padding:28px 22px;margin:18px 0;position:relative;overflow:hidden;text-align:center;}
+.cert-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--terra),var(--peach),var(--sage-lt));}
+
+/* NEXT CARDS */
+.next-card{display:flex;gap:12px;align-items:flex-start;background:var(--white);border-radius:var(--r);border:1px solid var(--beige);padding:15px 17px;margin-bottom:10px;}
+.next-num{width:30px;height:30px;border-radius:50%;background:var(--cream);border:1px solid var(--sand);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;font-weight:500;}
+
+/* HERO */
+.hero{background:var(--white);border-radius:0 0 16px 16px;padding:28px 20px 24px;margin-bottom:20px;border-bottom:1px solid var(--beige);text-align:center;}
+.hero-circle{width:72px;height:72px;border-radius:50%;background:var(--terra-bg);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;position:relative;}
+.hero-circle::before{content:'';position:absolute;width:86px;height:86px;border-radius:50%;border:1px solid var(--terra-lt);}
+.hero-dot{width:44px;height:44px;border-radius:50%;background:var(--terra);opacity:.2;}
+.meta-pills{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+.pill{font-size:12px;padding:4px 13px;border-radius:100px;background:var(--cream);border:1px solid var(--beige);color:var(--text-md);font-weight:300;}
+
+/* UTILS */
+.mb4{margin-bottom:4px;}.mb6{margin-bottom:6px;}.mb8{margin-bottom:8px;}.mb10{margin-bottom:10px;}.mb12{margin-bottom:12px;}.mb16{margin-bottom:16px;}.mb20{margin-bottom:20px;}
+.mt8{margin-top:8px;}.mt12{margin-top:12px;}.mt16{margin-top:16px;}
+.gap-label{font-size:12px;color:var(--text-lt);margin-bottom:6px;font-weight:300;}
+
+/* ── Mobile responsive ───────────────────────────── */
+@media (max-width: 480px) {
+  .content{padding:16px 14px 40px;}
+  .card{padding:14px 14px;}
+  .top-bar{padding:10px 14px;}
+  .display{font-size:24px;}
+  .display-sm{font-size:18px;}
+  .btn{font-size:14px;padding:12px 16px;}
+  .nav-row{flex-direction:column;gap:8px;}
+  .nav-row .btn-ghost{order:2;}
+  .nav-row .btn-primary{order:1;}
+  .prog-steps{gap:4px;}
+  .p-label{display:none;}
+  .p-dot{width:26px;height:26px;font-size:11px;}
+  .bubble{padding:12px 14px;}
+  .bubble-text{font-size:13px;}
+  .refl-box{padding:16px 14px;}
+  textarea{font-size:14px;}
+  .copy-btn{font-size:12px;padding:8px 12px;}
+  .quiz-q{font-size:15px;}
+  .opt{font-size:13px;padding:10px 12px;}
+  .q-fb{font-size:13px;}
+}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div id="s-welcome" class="screen active">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-badge">Ступень 1</div></div>
+  <div class="content" style="max-width:720px;">
+    <div class="hero">
+
+      <!-- Логотип femina — точное воспроизведение брендбука -->
+      <div style="margin:0 auto 16px;display:inline-block;">
+        <svg width="100" height="110" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Большая органическая форма — тело/волосы левой фигуры -->
+          <path d="M28 8 C16 8 8 18 8 30 C8 44 14 56 22 62 C26 65 30 66 34 64 C40 61 44 54 44 44 C44 30 42 18 36 12 C33 9 31 8 28 8Z" fill="#C4694A" opacity="0.85"/>
+          <!-- Меньшая органическая форма — тело правой фигуры (сдвинута вправо-вниз) -->
+          <path d="M52 22 C44 22 38 30 38 40 C38 52 43 62 50 67 C54 69 58 69 62 66 C68 62 72 54 72 44 C72 32 68 24 62 22 C59 22 55 22 52 22Z" fill="#C4694A" opacity="0.5"/>
+          <!-- Линия плеча/шеи левой фигуры -->
+          <path d="M20 58 C18 64 16 70 15 76" stroke="#C4694A" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+          <!-- Контур лица левой фигуры — овал -->
+          <path d="M30 28 C26 28 23 32 23 38 C23 46 26 52 31 53 C36 54 40 49 40 42 C40 34 36 28 30 28Z" fill="none" stroke="#C4694A" stroke-width="1.1" opacity="0.8"/>
+          <!-- Нос левой фигуры -->
+          <path d="M29 40 C29 43 31 44 33 43" fill="none" stroke="#C4694A" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+          <!-- Линия волос / лоб левой фигуры -->
+          <path d="M24 32 C25 26 28 24 32 25 C36 26 38 29 38 32" fill="none" stroke="#C4694A" stroke-width="0.9" stroke-linecap="round" opacity="0.55"/>
+          <!-- Контур лица правой фигуры — меньше, правее -->
+          <path d="M54 38 C50 38 47 42 47 47 C47 54 50 59 55 60 C60 61 64 56 64 49 C64 43 59 38 54 38Z" fill="none" stroke="#C4694A" stroke-width="1.0" opacity="0.65"/>
+          <!-- Нос правой фигуры -->
+          <path d="M53 50 C53 52 55 53 57 52" fill="none" stroke="#C4694A" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+          <!-- Рука/линия обнимающего жеста -->
+          <path d="M38 54 C42 58 46 60 50 60" fill="none" stroke="#C4694A" stroke-width="1.0" stroke-linecap="round" opacity="0.5"/>
+          <!-- Текст FEMINA -->
+          <text x="50" y="88" font-family="'Rubik', sans-serif" font-size="13" font-weight="500" fill="#C4694A" text-anchor="middle" letter-spacing="3">FEMINA</text>
+          <!-- Текст emotional support -->
+          <text x="50" y="102" font-family="'Rubik', sans-serif" font-size="7.5" font-weight="300" fill="#8FA898" text-anchor="middle" letter-spacing="1.5">emotional support</text>
+        </svg>
+      </div>
+
+      <div class="eyebrow mb8">femina Academy · Базовый курс</div>
+      <div class="display mb12" style="font-size:24px;line-height:1.25;">Стань ведущей в женском сообществе <em style="color:var(--terra);">femina</em></div>
+      <div class="body-text" style="max-width:400px;margin:0 auto;">
+        Узнай, как создавать безопасное пространство для женщин и быть рядом — не советом, а присутствием.
+      </div>
+      <div class="meta-pills"><span class="pill">Теоретический блок</span><span class="pill">6 этапов</span><span class="pill">~60 минут</span></div>
+    </div>
+
+    <div class="card"><div class="body-text" style="font-size:15px;color:#C4694A;line-height:1.6;">«Привет, милая! Прежде чем начать — буквально пару тёплых слов от меня», — Мария Нова, автор проекта.</div></div>
+    <div style="margin-bottom:16px;">
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
+  <iframe id="video1-iframe" src="" data-src="https://drive.google.com/file/d/1t8pO9dHUSm78slsC0H98EcqPxqVeLKTa/preview"
+    frameborder="0" allow="autoplay; fullscreen" allowfullscreen
+    style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;display:none;">
+  </iframe>
+  <div id="video1-poster" onclick="startVideo('video1')" style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;cursor:pointer;overflow:hidden;">
+    <img src="https://lh3.googleusercontent.com/d/1EzaAolJoIjsLu6EyYh1IbfGcALRiQq6m" onerror="this.onerror=null;this.src='https://drive.google.com/thumbnail?id=1EzaAolJoIjsLu6EyYh1IbfGcALRiQq6m&sz=w1280'" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;" draggable="false"/>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:rgba(196,105,74,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(0,0,0,.3);">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><polygon points="10,6 22,13 10,20" fill="white"/></svg>
+    </div>
+  </div>
+</div>
+    </div>
+        <div class="card">
+      <div class="eyebrow mb16">Путь ведущей</div>
+      <div style="position:relative;padding-left:32px;">
+        <!-- Вертикальная линия дорожной карты -->
+        <div style="position:absolute;left:10px;top:6px;bottom:6px;width:2px;background:linear-gradient(to bottom,var(--terra),var(--peach),var(--sage-lt),var(--sage));border-radius:2px;"></div>
+
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">1</div>
+          <div><div class="p-title">femina — это…</div><div class="p-text">Кто такая ведущая и на чём держится формат</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">2</div>
+          <div><div class="p-title">Слушание</div><div class="p-text">Что делать, чего не делать, как слышать не слова, а чувство</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--terra-lt);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">3</div>
+          <div><div class="p-title">Фасилитация встречи</div><div class="p-text">Структура, тайминг, скрипты и этикет</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--terra-lt);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">4</div>
+          <div><div class="p-title">Безопасность</div><div class="p-text">Аптечка ведущей — 12 ситуаций, язык femina</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--sage-lt);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">5</div>
+          <div><div class="p-title">Забота о себе</div><div class="p-text">Как не выгореть и восстанавливаться после встреч</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">★</div>
+          <div><div class="p-title">Итоговый тест</div><div class="p-text">Проверь свои знания</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">◆</div>
+          <div><div class="p-title">Практический блок</div><div class="p-text">Первые встречи в кругу ведущих и кураторок</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">✓</div>
+          <div><div class="p-title">Сертификация</div><div class="p-text"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="gap-label">Твоё имя и фамилия</div>
+      <input type="text" id="name-input" placeholder="Например: Анна Власова" >
+      <div id="name-hint" class="refl-hint" style="display:none;">Введи имя и фамилию — два слова через пробел</div>
+    </div>
+    <div class="card">
+      <div class="gap-label" style="margin-bottom:10px;">Выбери свой путь</div>
+      <button class="track-opt" id="t1" onclick="selectTrack(1)" type="button" style="width:100%;text-align:left;font-family:'Rubik',sans-serif;font-size:inherit;">
+        <div class="t-radio"><div class="t-radio-inner"></div></div>
+        <div><div class="t-label">Я новая в femina</div><div class="t-sub">Ещё не была на встречах</div></div>
+      </button>
+      <button class="track-opt" id="t2" onclick="selectTrack(2)" type="button" style="width:100%;text-align:left;font-family:'Rubik',sans-serif;font-size:inherit;">
+        <div class="t-radio"><div class="t-radio-inner"></div></div>
+        <div><div class="t-label">Я уже участница femina</div><div class="t-sub">Была на встречах, хочу стать ведущей</div></div>
+      </button>
+    </div>
+    <div class="card-cream">
+      <div class="accent-line"><div class="quote" style="font-size:17px;">«Стань той женщиной, которая была так нужна тебе самой в тёмные времена.»</div><div style="font-size:14px;font-weight:500;color:var(--terra);margin-top:10px;">— Мария Нова, основательница женского сообщества femina</div></div>
+    </div>
+    <div class="nav-row"><button class="btn btn-primary" id="start-btn" onclick="startCourse()" disabled>Начать →</button></div>
+  </div>
+</div>
+
+<!-- ОНБОРДИНГ: ПРАВИЛА СООБЩЕСТВА -->
+<div id="s-onboarding" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-step">Этап 0 из 6</div></div>
+  <div class="prog-wrap"><div class="prog-track-row"><div class="prog-track"><div class="prog-fill" style="width:0%"></div></div></div><div class="prog-steps"><div class="p-step cur"><div class="p-dot">0</div><div class="p-label">Ценности</div></div><div class="p-step"><div class="p-dot">1</div><div class="p-label">femina — это…</div></div><div class="p-step"><div class="p-dot">2</div><div class="p-label">Слушание</div></div><div class="p-step"><div class="p-dot">3</div><div class="p-label">Фасилитация</div></div><div class="p-step"><div class="p-dot">4</div><div class="p-label">Безопасность</div></div><div class="p-step"><div class="p-dot">5</div><div class="p-label">Забота</div></div><div class="p-step"><div class="p-dot">6</div><div class="p-label">Первый шаг</div></div><div class="p-step"><div class="p-dot">7</div><div class="p-label">Итоговый тест</div></div><div class="p-step"><div class="p-dot">8</div><div class="p-label">Результат</div></div></div></div>
+
+  <div class="content" style="padding-top:20px;">
+
+    <div style="margin-bottom:24px;">
+      <div class="eyebrow mb8">Этап 0 · Нулевой этап</div>
+      <div class="display-sm mb10" style="font-size:20px;white-space:nowrap;">Ценности и правила сообщества femina</div>
+      <div class="body-text">Прочитай внимательно — это основа, на которой держится всё, что ты узнаешь дальше.</div>
+    </div>
+
+    <div class="card-teal">
+      <div class="eyebrow mb6" style="color:var(--sage);">Миссия</div>
+      <div class="body-text" style="color:var(--sage);font-size:14px;">femina — модерируемое peer-to-peer комьюнити поддержки для женщин. Здесь безопасно делиться опытом, быть услышанной и не оставаться одной.</div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--sage-lt);font-size:13px;color:var(--sage);line-height:1.6;">Мы решаем проблему изоляции и недоступности дорогой терапии, предоставляя доступ к безопасным модерируемым группам поддержки. Наша миссия — конвертировать прожитый женский опыт в ресурс для помощи другим, создавая экологичное сообщество с эмпатией и принятием.</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb12">Наши ценности</div>
+      <div class="do-row"><div class="do-icon">⏺</div><div class="do-text">Равенство и уважение</div></div>
+      <div class="do-row"><div class="do-icon">⏺</div><div class="do-text">Эмпатия вместо оценок</div></div>
+      <div class="do-row"><div class="do-icon">⏺</div><div class="do-text">Личный опыт вместо «правильных советов»</div></div>
+      <div class="do-row"><div class="do-icon">⏺</div><div class="do-text">Конфиденциальность и безопасность</div></div>
+    </div>
+
+    <div class="eyebrow mb12">Основные правила общения</div>
+
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:15px;color:var(--terra);flex-shrink:0;margin-top:1px;">1</div>
+        <div>
+          <div class="p-title" style="margin-bottom:6px;">Конфиденциальность</div>
+          <div class="p-text">Всё, что сказано в чате и на встречах, остаётся внутри сообщества.</div>
+          <div class="p-text" style="margin-top:6px;">Для обеспечения конфиденциальности встреч мы просим каждую ведущую подписать NDA при регистрации в приложении: <span style="color:var(--sage);">@femina_app_bot</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:15px;color:var(--terra);flex-shrink:0;margin-top:1px;">2</div>
+        <div>
+          <div class="p-title" style="margin-bottom:6px;">Мы не учим жить</div>
+          <div class="p-text">Мы делимся своим опытом. Если возникает желание дать совет — сначала спрашиваем, нужен ли он.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:15px;color:var(--terra);flex-shrink:0;margin-top:1px;">3</div>
+        <div>
+          <div class="p-title" style="margin-bottom:6px;">С уважением и заботой</div>
+          <div class="p-text">У нас принято общаться на «ты». Даже при несогласии мы сохраняем уважительный и бережный тон.</div>
+          <div class="p-text" style="margin-top:6px;">Не пишем участницам в личные сообщения без предварительного согласия.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:15px;color:var(--terra);flex-shrink:0;margin-top:1px;">4</div>
+        <div>
+          <div class="p-title" style="margin-bottom:6px;">Я-сообщения</div>
+          <div class="p-text">Говорим от себя:</div>
+          <div class="bubble" style="margin-top:8px;"><div class="bubble-text">«Я чувствую…», «В моём опыте было…», «Мне откликается / не откликается…»</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-welcome')">←</button><button class="btn btn-primary" onclick="go('s-1')">Перейти к курсу →</button></div>
+  </div>
+</div>
+
+
+<!-- ЭТАП 1 -->
+<div id="s-1" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-step">Этап 1 из 6</div></div>
+  <div class="prog-wrap"><div class="prog-track-row"><div class="prog-track"><div class="prog-fill" style="width:0%"></div></div></div><div class="prog-steps"><div class="p-step done" onclick="go('s-onboarding')" title="Вернуться к этому этапу"><div class="p-dot">0</div><div class="p-label">Ценности</div></div><div class="p-step cur"><div class="p-dot">1</div><div class="p-label">femina — это…</div></div><div class="p-step"><div class="p-dot">2</div><div class="p-label">Слушание</div></div><div class="p-step"><div class="p-dot">3</div><div class="p-label">Фасилитация</div></div><div class="p-step"><div class="p-dot">4</div><div class="p-label">Безопасность</div></div><div class="p-step"><div class="p-dot">5</div><div class="p-label">Забота</div></div><div class="p-step"><div class="p-dot">6</div><div class="p-label">Первый шаг</div></div><div class="p-step"><div class="p-dot">7</div><div class="p-label">Итоговый тест</div></div><div class="p-step"><div class="p-dot">8</div><div class="p-label">Результат</div></div></div></div>
+  <div class="content">
+    <div class="eyebrow mb8">Этап 1 · 12 мин</div>
+    <div class="display-sm mb20">femina — это…</div>
+    <div class="card"><div class="eyebrow mb8">Что такое femina</div><div class="body-text">femina — сообщество, в котором женщина может снять социальные маски и быть собой. Мы проводим закрытые встречи, чтобы помочь женщинам в этом. Это не терапия и не дружеский разговор. Это <strong>равная поддержка</strong>.</div></div>
+
+    <div class="card">
+      <div class="eyebrow mb10">Кто такая ведущая femina</div>
+      <div class="body-text mb12">Ведущая femina — такая же женщина, которая помогает прийти к себе через личный опыт, присутствие и соучастие.</div>
+      <div class="card-coral" style="margin-bottom:14px;">
+        <div class="eyebrow mb4" style="color:var(--terra);">Супер-сила ведущей</div>
+        <div style="font-family:'Rubik',sans-serif;font-size:22px;font-weight:500;color:var(--terra);">Эмпатия + Структура</div>
+      </div>
+      <div class="body-text mb12">Ты не обязана быть экспертом, иметь такой же опыт, терапевтировать кого-то. Твоя задача — присутствовать и держать порядок, тайминг встречи, чтобы всем хватило места.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:10px;align-items:center;"><div style="font-size:18px;">🤍</div><div class="body-text" style="font-size:14px;"><strong style="color:var(--text-dk);">Эмпатия</strong> — твоё сердце</div></div>
+        <div style="display:flex;gap:10px;align-items:center;"><div style="font-size:18px;">🤲</div><div class="body-text" style="font-size:14px;"><strong style="color:var(--text-dk);">Структура</strong> — твои руки</div></div>
+      </div>
+    </div>
+    <div class="card-cream" style="text-align:center;padding:22px;"><div class="quote">Я не должна никого чинить.<br>Я просто держу свет,<br>пока они ищут свой путь.</div><div style="font-size:11px;color:var(--text-lt);margin-top:10px;letter-spacing:.08em;text-transform:uppercase;">Главная мантра ведущей</div></div>
+
+    <div class="refl-box">
+      <div class="refl-title">Твоя рефлексия</div><div class="refl-sub">Подумай над вопросом</div>
+      <div class="refl-q">Что для тебя значит «держать свет»?</div>
+      <textarea id="r1" placeholder="Напиши, что думаешь…" ></textarea>
+      <div class="refl-hint" id="r1-hint">Подумай над вопросом</div>
+    </div>
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-welcome')">←</button><button class="btn btn-primary" id="btn-1" onclick="go('s-q1')" disabled>Далее →</button></div>
+  </div>
+</div>
+
+<div id="s-q1" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-badge">Мини-тест</div></div>
+  <div class="content">
+    <div class="eyebrow mb8">Этап 1 · Проверка</div>
+    <div class="quiz-q">Главная роль ведущей femina — это…</div>
+    <div id="q1-opts">
+      <div class="q-opt" onclick="miniq('q1-opts',0,1,'q1-fb','btn-q1')">Давать советы из личного опыта</div>
+      <div class="q-opt" onclick="miniq('q1-opts',1,1,'q1-fb','btn-q1')">Создавать безопасное пространство и следить за таймингом</div>
+      <div class="q-opt" onclick="miniq('q1-opts',2,1,'q1-fb','btn-q1')">Быть психологом для участниц</div>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-1')">←</button><button class="btn btn-primary" id="btn-q1" onclick="go('s-2')" disabled>К этапу 2 →</button></div>
+  </div>
+</div>
+
+<!-- ЭТАП 2 -->
+<div id="s-2" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-step">Этап 2 из 6</div></div>
+  <div class="prog-wrap"><div class="prog-track-row"><div class="prog-track"><div class="prog-fill" style="width:16%"></div></div></div><div class="prog-steps"><div class="p-step done" onclick="go('s-onboarding')" title="Вернуться к этому этапу"><div class="p-dot">0</div><div class="p-label">Ценности</div></div><div class="p-step done" onclick="go('s-1')" title="Вернуться к этому этапу"><div class="p-dot">1</div><div class="p-label">femina — это…</div></div><div class="p-step cur"><div class="p-dot">2</div><div class="p-label">Слушание</div></div><div class="p-step"><div class="p-dot">3</div><div class="p-label">Фасилитация</div></div><div class="p-step"><div class="p-dot">4</div><div class="p-label">Безопасность</div></div><div class="p-step"><div class="p-dot">5</div><div class="p-label">Забота</div></div><div class="p-step"><div class="p-dot">6</div><div class="p-label">Первый шаг</div></div><div class="p-step"><div class="p-dot">7</div><div class="p-label">Итоговый тест</div></div><div class="p-step"><div class="p-dot">8</div><div class="p-label">Результат</div></div></div></div>
+<div class="content">
+    <div class="eyebrow mb8">Этап 2 · 14 мин</div><div class="display-sm mb10" style="font-size:18px;line-height:1.3;">Ведущая: активное слушание и поддержка безопасного пространства</div><div class="body-text mb20">Что делать, чего не делать — и как слышать не слова, а чувство.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div class="card" style="margin-bottom:0;">
+        <div class="eyebrow mb10">Чего НЕ надо делать</div>
+        <div class="do-row"><div class="do-icon" style="color:var(--terra);">✕</div><div class="do-text"><strong style="color:var(--text-dk);">Не лечи</strong> — для терапии используют другие места.</div></div>
+        <div class="do-row"><div class="do-icon" style="color:var(--terra);">✕</div><div class="do-text"><strong style="color:var(--text-dk);">Не спасай</strong> — дай поддержку, не бросайся «чинить».</div></div>
+        <div class="do-row"><div class="do-icon" style="color:var(--terra);">✕</div><div class="do-text"><strong style="color:var(--text-dk);">Не давай советов</strong> — даже если попросили, только из личного опыта.</div></div>
+      </div>
+      <div class="card-teal" style="margin-bottom:0;">
+        <div class="eyebrow mb10" style="color:var(--sage);">Что надо делать</div>
+        <div class="do-row" style="border-color:var(--sage-lt);"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text" style="color:var(--sage);"><strong>Держи тайминг</strong> — чтобы у каждой была возможность высказаться.</div></div>
+        <div class="do-row" style="border-color:var(--sage-lt);"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text" style="color:var(--sage);"><strong>Слушай сердцем</strong> — кивай, реагируй, дай понять «я тебя слышу».</div></div>
+        <div class="do-row" style="border-color:var(--sage-lt);"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text" style="color:var(--sage);"><strong>Принимай «разность»</strong> — несмотря на религию, этнос, бэкграунд. Боль не имеет паспорта.</div></div>
+        <div class="do-row" style="border-bottom:none;"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text" style="color:var(--sage);"><strong>Возвращай ответственность</strong> — мягко напомни: каждая несёт ответственность за своё состояние.</div></div>
+      </div>
+    </div>
+
+    <div class="eyebrow mb10">Четыре уровня слушания</div>
+    <div class="timing-row"><div style="width:26px;height:26px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;">1</div><div><div class="p-title">Слушай сердцем</div><div class="p-text">Кивай, реагируй — «я тебя слышу».</div></div></div>
+    <div class="timing-row"><div style="width:26px;height:26px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;">2</div><div><div class="p-title">Слушай смысл и чувство</div><div class="p-text">«Я слышу, как это было тяжело. Твоя история очень отозвалась мне — даже мурашки.»</div></div></div>
+    <div class="timing-row"><div style="width:26px;height:26px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;">3</div><div><div class="p-title">Принимай «разность»</div><div class="p-text">Религия, этнос, опыт, возраст — боль не имеет паспорта. Принимай каждую такой, какая она есть.</div></div></div>
+    <div class="timing-row"><div style="width:26px;height:26px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;">4</div><div><div class="p-title">Возвращай ответственность</div><div class="p-text">Не чини и не спасай. Задавай вопросы, которые помогают участнице прийти к своему ответу: «Что ты сама об этом думаешь?»</div></div></div>
+
+    <div class="refl-box">
+      <div class="refl-title">Твоя рефлексия</div><div class="refl-sub">Подумай над вопросом</div>
+      <div class="refl-q">Какой уровень слушания тебе отзывается больше всего? Почему?</div>
+      <textarea id="r2" placeholder="Напиши, что думаешь…"></textarea>
+      <div class="refl-hint" id="r2-hint">Ответь на вопрос, чтобы перейти дальше</div>
+    </div>
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-q1')">←</button><button class="btn btn-primary" id="btn-2" onclick="go('s-q2')" disabled>Далее →</button></div>
+  </div>
+</div>
+
+<!-- КВИЗ 2 -->
+<div id="s-q2" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-badge">Мини-тест</div></div>
+  <div class="content">
+    <div class="eyebrow mb8">Этап 2 · Проверка</div>
+    <div class="quiz-q">Участница начала давать советы другой — «Ой, а ты попробуй вот это…». Что делаешь как ведущая?</div>
+    <div id="q2-opts">
+      <div class="q-opt" onclick="miniq('q2-opts',0,2,'q2-fb','btn-q2')">Жду, пока сама остановится — неудобно перебивать</div>
+      <div class="q-opt" onclick="miniq('q2-opts',1,2,'q2-fb','btn-q2')">Соглашаюсь — вдруг совет действительно полезный</div>
+      <div class="q-opt" onclick="miniq('q2-opts',2,2,'q2-fb','btn-q2')">Мягко останавливаю: «Напомню правило — мы не даём советов. [Имя], как эта история отозвалась тебе?»</div>
+      <div class="q-opt" onclick="miniq('q2-opts',3,2,'q2-fb','btn-q2')">Завершаю встречу досрочно</div>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-2')">←</button><button class="btn btn-primary" id="btn-q2" onclick="go('s-3')" disabled>К этапу 3 →</button></div>
+  </div>
+</div>
+
+<!-- ЭТАП 3 -->
+<div id="s-3" class="screen">  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-step">Этап 3 из 6</div></div>
+  <div class="prog-wrap"><div class="prog-track-row"><div class="prog-track"><div class="prog-fill" style="width:33%"></div></div></div><div class="prog-steps"><div class="p-step done" onclick="go('s-onboarding')" title="Вернуться к этому этапу"><div class="p-dot">0</div><div class="p-label">Ценности</div></div><div class="p-step done" onclick="go('s-1')" title="Вернуться к этому этапу"><div class="p-dot">1</div><div class="p-label">femina — это…</div></div><div class="p-step done" onclick="go('s-2')" title="Вернуться к этому этапу"><div class="p-dot">2</div><div class="p-label">Слушание</div></div><div class="p-step cur"><div class="p-dot">3</div><div class="p-label">Фасилитация</div></div><div class="p-step"><div class="p-dot">4</div><div class="p-label">Безопасность</div></div><div class="p-step"><div class="p-dot">5</div><div class="p-label">Забота</div></div><div class="p-step"><div class="p-dot">6</div><div class="p-label">Первый шаг</div></div><div class="p-step"><div class="p-dot">7</div><div class="p-label">Итоговый тест</div></div><div class="p-step"><div class="p-dot">8</div><div class="p-label">Результат</div></div></div></div>
+<div class="content">
+    <div class="eyebrow mb8">Этап 3 · 20 мин</div><div class="display-sm mb10">Фасилитация встречи</div><div class="body-text mb20">Рекомендуемая структура встречи от начала до завершения, тайминг, скрипты для встречи.</div>
+    <div class="eyebrow mb12">Структура встречи (до 60 мин)</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+
+      <div style="display:flex;align-items:stretch;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--beige);">
+        <div style="background:var(--sand);min-width:80px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+          <div style="font-size:13px;color:var(--text-lt);line-height:1.3;">0–5<br>мин</div>
+        </div>
+        <div style="width:4px;background:var(--sand);flex-shrink:0;"></div>
+        <div style="padding:12px 14px;flex:1;background:#fff;">
+          <div style="font-size:14px;font-weight:600;color:var(--text-dk);margin-bottom:4px;">Сбор участниц</div>
+          <div style="font-size:13px;color:var(--text-lt);line-height:1.6;">Участницы собираются. Это время поздороваться с каждой и сообщить, что мы ждем несколько минут. Обращаться к участницам стоит так, как они зарегистрировались для входа либо так, как они представились. В зависимости от количества участниц встречу можно начать немного раньше — по ощущению.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:stretch;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--beige);">
+        <div style="background:var(--terra-pale);min-width:80px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+          <div style="font-size:13px;color:var(--terra);line-height:1.3;">5–10<br>мин</div>
+        </div>
+        <div style="width:4px;background:var(--terra);flex-shrink:0;"></div>
+        <div style="padding:12px 14px;flex:1;background:#fff;">
+          <div style="font-size:14px;font-weight:600;color:var(--text-dk);margin-bottom:4px;">Соглашения</div>
+          <div style="font-size:13px;color:var(--text-lt);line-height:1.6;">Озвучь соглашения голосом: конфиденциальность, я-позиция, без советов, забота о тайминге. Продублируй скрипт в чат — чтобы опоздавшие могли ознакомиться.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:stretch;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--beige);">
+        <div style="background:var(--terra-pale);min-width:80px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+          <div style="font-size:13px;color:var(--terra);line-height:1.3;">10–15<br>мин</div>
+        </div>
+        <div style="width:4px;background:var(--terra);flex-shrink:0;"></div>
+        <div style="padding:12px 14px;flex:1;background:#fff;">
+          <div style="font-size:14px;font-weight:600;color:var(--text-dk);margin-bottom:4px;">Вход в тему</div>
+          <div style="font-size:13px;color:var(--text-lt);line-height:1.6;">После оглашения соглашений введи участниц в тему. На этом этапе важно озвучить тему и задать вопрос-крючок.</div>
+          <div style="margin-top:10px;padding:10px 12px;background:var(--cream,#fdf8f3);border-radius:8px;border-left:3px solid var(--terra);">
+            <div style="font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--terra);text-transform:uppercase;margin-bottom:6px;">Вопрос-крючок</div>
+            <div style="font-size:13px;color:var(--text-md);line-height:1.5;margin-bottom:8px;">Цель этого вопроса — помочь участницам поразмышлять и поделиться собственным опытом в рамках темы.</div>
+            <div style="font-size:11px;color:var(--text-lt);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;">Например:</div><div style="font-size:13px;color:var(--text-md);font-style:italic;padding:8px 12px;background:#fff;border-radius:6px;margin-bottom:8px;">«В какой ситуации на этой неделе ты промолчала, хотя хотела сказать «НЕТ»?»</div>
+            <div style="font-size:12px;color:var(--text-lt);line-height:1.5;">После вопроса-крючка нормально, если участницы молчат — им нужно время, чтобы решиться. Не торопи. Посчитай про себя до 10, и если тишина продолжается, начни с себя.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:stretch;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--beige);">
+        <div style="background:#f0ece8;min-width:80px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+          <div style="font-size:13px;color:var(--terra);line-height:1.3;font-weight:600;">15–55<br>мин</div>
+        </div>
+        <div style="width:4px;background:var(--terra);flex-shrink:0;"></div>
+        <div style="padding:12px 14px;flex:1;background:#fff;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-dk);margin-bottom:4px;">Основной круг</div>
+          <div style="font-size:13px;color:var(--text-lt);line-height:1.6;margin-bottom:10px;">Цель основного круга — дать слово каждой участнице, и твоя задача следить за временем и безопасностью пространства. Мягко останавливай, если кто-то из участниц затягивает рассказ.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:80px;padding:8px 10px;background:var(--cream,#fdf8f3);border-radius:8px;text-align:center;">
+              <div style="font-size:11px;color:var(--text-lt);margin-bottom:2px;">до 5 чел</div>
+              <div style="font-size:14px;font-weight:600;color:var(--terra);">6–7 мин</div>
+            </div>
+            <div style="flex:1;min-width:80px;padding:8px 10px;background:var(--cream,#fdf8f3);border-radius:8px;text-align:center;">
+              <div style="font-size:11px;color:var(--text-lt);margin-bottom:2px;">до 10 чел</div>
+              <div style="font-size:14px;font-weight:600;color:var(--terra);">3–4 мин</div>
+            </div>
+            <div style="flex:1;min-width:80px;padding:8px 10px;background:var(--cream,#fdf8f3);border-radius:8px;text-align:center;">
+              <div style="font-size:11px;color:var(--text-lt);margin-bottom:2px;">более 10</div>
+              <div style="font-size:14px;font-weight:600;color:var(--terra);">2–3 мин</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:stretch;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--beige);">
+        <div style="background:var(--sage-pale,#eef3ef);min-width:80px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+          <div style="font-size:13px;color:var(--sage);line-height:1.3;">55–60<br>мин</div>
+        </div>
+        <div style="width:4px;background:var(--sage);flex-shrink:0;"></div>
+        <div style="padding:12px 14px;flex:1;background:#fff;">
+          <div style="font-size:14px;font-weight:600;color:var(--text-dk);margin-bottom:4px;">Завершение</div>
+          <div style="font-size:13px;color:var(--text-lt);line-height:1.6;">Цель этого этапа — мягко соединить группу и предложить каждой участнице поделиться по кругу: одно слово, действие или мысль, которую забирает с собой. После круга поблагодари за честность, напомни о конфиденциальности и попрощайся.</div>
+        </div>
+      </div>
+
+    </div>
+        <div class="card" style="margin-top:20px;"><div class="eyebrow mb10">Этикет встречи</div>
+      <div class="do-row"><div class="do-icon" style="color:var(--terra);">→</div><div class="do-text">Обращайся так, как участница зарегистрировалась. <strong style="color:var(--text-dk);">Не искажай имена.</strong></div></div>
+      <div class="do-row"><div class="do-icon" style="color:var(--terra);">→</div><div class="do-text">Если участница пришла после начала — можешь поздороваться и коротко напомнить, что правила и тема встречи в чате. Не перебивай других участниц, если они говорят, и не уходи в долгие объяснения, что произошло до сих пор.</div></div>
+      <div class="do-row" style="border-bottom:none;"><div class="do-icon" style="color:var(--terra);">→</div><div class="do-text">Камера или без, чат или просто присутствовать — <strong style="color:var(--text-dk);">любое присутствие ценно.</strong></div></div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="display-sm mb6" style="font-size:16px;">Скрипты ведущей для проведения встречи</div>
+      <div class="body-text mb16" style="font-size:14px;color:var(--text-md);line-height:1.6;">Скрипты в данном сценарии приведены для ориентира, учитывая принципы сообщества. Ты всегда можешь отклоняться от точных формулировок до тех пор, пока основной посыл сохранён.</div>
+    </div>
+    <div class="card"><div class="eyebrow mb6">Скрипт вход в тему</div><div class="bubble"><div class="bubble-text">Сегодня мы говорим про [Название темы]. Почему я взяла эту тему: [Личная история]. И сегодня я предлагаю вам поразмышлять и поделиться: [Вопрос-крючок]. Например: В какой ситуации на этой неделе ты промолчала, хотя хотела сказать «НЕТ»?</div></div><button class="copy-btn" onclick="cpText(this,'Сегодня мы говорим про [Название темы]. Почему я взяла эту тему: [Личная история]. И сегодня я предлагаю вам поразмышлять и поделиться: [Вопрос-крючок].')">↑ Скопировать</button></div>
+    <div class="card"><div class="eyebrow mb6">Скрипт основного круга</div><div class="bubble"><div class="bubble-text">Сейчас я передаю микрофон вам. У нас есть по … минут на каждую. Я буду следить за временем. Когда останется 1 минута, я подниму руку. Кто хочет начать?</div></div><button class="copy-btn" onclick="cpText(this,'Сейчас я передаю микрофон вам. У нас есть по … минут на каждую. Когда останется 1 минута, я подниму руку. Кто хочет начать?')">↑ Скопировать</button><div class="card-cream" style="margin:10px 0 0;"><div style="font-size:12px;color:var(--text-lt);margin-bottom:4px;">Если участница затянула:</div><div style="font-size:14px;color:var(--text-md);font-style:italic;line-height:1.55;">[Имя], прости, что прерываю. Давай сформулируем главную мысль в одном предложении?</div></div></div>
+    
+    <div class="card"><div class="eyebrow mb6">Скрипт открытия — голосом</div><div style="font-size:12px;color:var(--text-lt);margin-bottom:8px;">Текст можно подстроить, сохранив смысл</div><div class="bubble"><div class="bubble-text">Привет, мои хорошие! Рада вас видеть. Меня зовут [Имя], и сегодня я держу поле нашей встречи. У нас с вами есть ровно час. Чтобы встреча прошла легко и продуктивно, давайте напомню наши принципы: встречи конфиденциальны… говорим всегда с я-позиции… не даём советов… заботимся, чтобы у каждой была возможность высказаться.</div></div><button class="copy-btn" onclick="cpText(this,'Привет, мои хорошие! Рада вас видеть. Меня зовут [Имя], и сегодня я держу поле нашей встречи. У нас с вами есть ровно час. Чтобы встреча прошла легко и продуктивно, давайте напомню наши принципы: встречи конфиденциальны… говорим всегда с я-позиции… не даём советов… заботимся, чтобы у каждой была возможность высказаться.')">↑ Скопировать</button></div>
+
+    <div class="card-cream">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-size:20px;flex-shrink:0;">💡</div>
+        <div class="body-text" style="font-size:14px;">На своей первой встрече обязательно проговори эту речь, чтобы потренироваться. Даже если там будут только опытные ведущие.</div>
+      </div>
+    </div>
+    <div class="card-teal"><div class="eyebrow mb6" style="color:var(--sage);">Скрипт в чат — скопируй заранее</div><div style="font-size:12px;color:var(--sage);opacity:.8;margin-bottom:8px;">Вставь до начала встречи, чтобы не отвлекаться</div><div class="bubble"><div class="bubble-text">Добро пожаловать. Сегодня мы говорим здесь о &lt;тема встречи&gt;. Ты можешь быть с камерой или без, поделиться историей или просто быть в нашем пространстве. Мы: соблюдаем конфиденциальность, не даём советы без запроса, говорим о себе, не рекламируем себя и следим за временем.</div></div><button class="copy-btn" onclick="cpText(this,'Добро пожаловать. Сегодня мы говорим здесь о <тема встречи>. Ты можешь быть с камерой или без, поделиться историей или просто быть в нашем пространстве.')">↑ Скопировать в чат</button></div>
+    <div class="card">
+      <div class="eyebrow mb6">Скрипт завершения</div>
+      <div class="bubble">
+        <div class="bubble-text">Наше время подходит к концу. Предлагаю поделиться по кругу: с чем вы уходите? Одно действие, слово, или одна мысль, которую забираете с собой.</div>
+      </div>
+      <div class="eyebrow mb6 mt12">Скрипт после круга</div>
+      <div class="bubble">
+        <div class="bubble-text">Спасибо вам за честность и глубину. Напоминаю, что наши встречи конфиденциальны, пусть всё это останется в нашем кругу. Обнимаю каждую. До встречи!</div>
+      </div>
+    </div>
+
+
+<div class="refl-box">
+      <div class="refl-title">Твоя рефлексия</div><div class="refl-sub">Подумай над вопросом</div>
+      <div class="refl-q">Какой этап встречи кажется тебе самым сложным для ведения и почему?</div>
+      <textarea id="r3" placeholder="Напиши, что думаешь…" ></textarea>
+      <div class="refl-hint" id="r3-hint">Ответь на вопрос, чтобы перейти дальше</div>
+    </div>
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-q2')">←</button><button class="btn btn-primary" id="btn-3" onclick="go('s-4')" disabled>Далее →</button></div>
+  </div>
+</div>
+
+<!-- ЭТАП 4 -->
+<div id="s-4" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-step">Этап 4 из 6</div></div>
+  <div class="prog-wrap"><div class="prog-track-row"><div class="prog-track"><div class="prog-fill" style="width:50%"></div></div></div><div class="prog-steps"><div class="p-step done" onclick="go('s-onboarding')" title="Вернуться к этому этапу"><div class="p-dot">0</div><div class="p-label">Ценности</div></div><div class="p-step done" onclick="go('s-1')" title="Вернуться к этому этапу"><div class="p-dot">1</div><div class="p-label">femina — это…</div></div><div class="p-step done" onclick="go('s-2')" title="Вернуться к этому этапу"><div class="p-dot">2</div><div class="p-label">Слушание</div></div><div class="p-step done" onclick="go('s-3')" title="Вернуться к этому этапу"><div class="p-dot">3</div><div class="p-label">Фасилитация</div></div><div class="p-step cur"><div class="p-dot">4</div><div class="p-label">Безопасность</div></div><div class="p-step"><div class="p-dot">5</div><div class="p-label">Забота</div></div><div class="p-step"><div class="p-dot">6</div><div class="p-label">Первый шаг</div></div><div class="p-step"><div class="p-dot">7</div><div class="p-label">Итоговый тест</div></div><div class="p-step"><div class="p-dot">8</div><div class="p-label">Результат</div></div></div></div>
+  <div class="content">
+    <div class="eyebrow mb8">Этап 4 · 15 мин</div><div class="display-sm mb10">Эмоциональная безопасность</div><div class="body-text mb20">Как держать безопасное пространство и что делать, когда что-то пошло не так.</div>
+    <div class="card"><div class="eyebrow mb10">Чек-лист эмоциональной безопасности</div>
+      <div id="checklist">
+        <div class="chk-row" onclick="chk(this)"><div class="chk-box"></div><div class="chk-text"><strong style="color:var(--text-dk);">Участница плачет</strong> → присутствуй, смотри с теплом, кивай. Не переключай внимание.</div></div>
+        <div class="chk-row" onclick="chk(this)"><div class="chk-box"></div><div class="chk-text"><strong style="color:var(--text-dk);">Тяжёлая история</strong> → глубокий вдох, ноги на пол, будь честна в своей реакции.</div></div>
+        <div class="chk-row" onclick="chk(this)"><div class="chk-box"></div><div class="chk-text"><strong style="color:var(--text-dk);">Запрос терапии</strong> → будь рядом, дай быть услышанной, не давай рекомендаций.</div></div>
+        <div class="chk-row" onclick="chk(this)" style="border-bottom:none;"><div class="chk-box"></div><div class="chk-text"><strong style="color:var(--text-dk);">После встречи</strong> → стряхни чужую боль: душ, прогулка. Не носи в себе.</div></div>
+      </div>
+    </div>
+    <div class="card-cream"><div class="eyebrow mb10">Карточка языка femina</div>
+      <div class="bubble"><div class="bubble-text">Мы с тобой. Твои чувства важны. Дыши. Возьми столько времени, сколько нужно.</div></div>
+      <div class="bubble"><div class="bubble-text">Спасибо тебе за эту честность. Твоя история очень отозвалась мне.</div></div>
+      <div class="bubble"><div class="bubble-text">[Имя], мы в сообществе femina не даём советов, скажи лучше, как эта история отозвалась ТЕБЕ? Что ты почувствовала?</div></div>
+    </div>
+    <div class="card"><div class="eyebrow mb10">Аптечка ведущей</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;">Ты работаешь с живыми людьми, поэтому идеально гладко не будет никогда. И это нормально. Здесь собраны решения для самых частых ситуаций, которые страшат ведущих.</div>
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">1. Технические проблемы у участницы</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Если у участницы не подключается микрофон или видео, отправь сообщение в чат (не перебивая говорящих).</div>
+      <div class="bubble"><div class="bubble-text">Скорее всего дело в настройках устройства, посмотри пожалуйста как это исправить здесь:<br><a href="https://support.kontur.ru/talk/43561-oshibka_mikrofon_vyklyuchen_v_nastrojkax_sistemy" target="_blank" style="color:var(--terra);word-break:break-all;">support.kontur.ru — микрофон выключен в настройках</a><br><a href="https://support.kontur.ru/talk/43642-oshibka_net_razreshenij" target="_blank" style="color:var(--terra);word-break:break-all;">support.kontur.ru — нет разрешений</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">2. Повисла долгая тишина</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Не бойся паузы. Тишина пугает только ведущую. Для участниц это момент осмысления.<br>Посчитай про себя до 10. Обычно кто-то начинает говорить на счёте 7.<br>Если молчат дальше — скажи:</div>
+      <div class="bubble"><div class="bubble-text">Тишина — это тоже часть процесса, нам нужно время настроиться. Я могу начать с себя.</div></div>
+      <div class="body-text" style="font-size:13px;color:var(--text-lt);margin-top:8px;line-height:1.5;">И расскажи коротко свою историю на 1–2 минуты.</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">3. Участница плачет</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Если твоя первая реакция — спасти и сказать «не плачь, всё будет хорошо».<br><strong style="color:var(--text-dk);">ОСТАНОВИСЬ.</strong><br>В пространстве femina слёзы — это признак того, что процесс идёт, броня снята.<br>Просто присутствуй. Смотри в камеру с теплом. Кивай.</div>
+      <div class="bubble"><div class="bubble-text">Мы с тобой. Твои чувства важны. Дыши. Возьми столько времени, сколько нужно, мы никуда не спешим.</div></div>
+      <div class="card-cream" style="margin:10px 0 0;"><div style="font-size:13px;color:var(--text-md);line-height:1.5;">⚠️ Не переключай внимание на других («Ой, кто ещё хочет сказать?»), пока она не выдохнет.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">4. История слишком тяжёлая, и я сама «поплыла»</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Ты человек, тебя может триггерить.<br>Сделай глубокий вдох. Поставь ноги на пол.</div>
+      <div class="bubble"><div class="bubble-text">Спасибо тебе за эту честность. Твоя история очень отозвалась мне, у меня даже мурашки / ком в горле.</div></div>
+      <div class="body-text" style="font-size:13px;color:var(--text-lt);margin-top:8px;line-height:1.5;">Честность возвращает тебя в тело. После встречи обязательно «стряхни» это с себя (душ, прогулка) — не носи чужую боль.</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">5. Участница признаётся в том, что требует помощи специалиста</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Депрессия, алкоголизм, другие зависимости. В этом нет ничего страшного — наши встречи не преследуют целью лечение. Она выбрала быть здесь и помогать себе так.<br>Сделай глубокий вдох. Будь рядом, дай ей быть услышанной. Не давай рекомендаций.</div>
+      <div class="bubble"><div class="bubble-text">Спасибо тебе за честность. Я сама не знакома с такими состояниями, но твоя история очень отзывается во мне. Я чувствую… [расскажи что реально происходит в теле, без рекомендаций].</div></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">6. Участница перебивает другую</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Это разрушает безопасность круга. Твоя обязанность — вмешаться. Твёрдо, но мягко:</div>
+      <div class="bubble"><div class="bubble-text">[Имя], я мягко напомню, что у нас действует правило одного микрофона. Сейчас говорит [Имя], давайте её дослушаем.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">7. Участница даёт непрошенные советы</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Это также разрушает безопасность круга. Твоя обязанность — вмешаться. Твёрдо, но мягко:</div>
+      <div class="bubble"><div class="bubble-text">[Имя], прости, я здесь приторможу. У нас в femina есть золотое правило: мы не даём советов и не лечим друг друга. Скажи, пожалуйста, через «Я»: что ТЫ почувствовала, когда слушала эту историю? Что в тебе отозвалось?</div></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">8. Участница рекламирует себя как специалиста</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Это может сильно выбивать других участниц — смещается акцент внимания.</div>
+      <div class="bubble"><div class="bubble-text">[Имя], прости, я вынуждена приостановить тебя. Я напомню, что мы не рекламируем свои практики, говорим только про личный опыт и свои истории без фокуса на терапевтическую деятельность. Я чувствую дискомфорт и потерю фокуса с темы встречи.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">9. Участница говорит долго и не останавливается</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">В этот момент остальные участницы злятся и скучают. Ты защищаешь их время.<br>Мягко, но громче её голоса:</div>
+      <div class="bubble"><div class="bubble-text">[Имя], очень ценно то, что ты говоришь, но я вынуждена быть хранительницей времени. У нас осталось 30 секунд на твой слот. Давай подведём итог одной фразой?</div></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">10. Кто-то ведёт себя агрессивно / обесценивает других</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Если человек нарушает безопасность круга и не реагирует на замечания — ты имеешь право попросить его удалиться.<br><strong style="color:var(--text-dk);">Предупреди один раз.</strong> Если продолжается — удаляй из встречи. Если технически вывести не получается — предложи участницам завершить встречу и связаться в чате для получения новой ссылки.</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">11. Я забыла сценарий / растерялась</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Признайся в этом:</div>
+      <div class="bubble"><div class="bubble-text">Девочки, я немного волнуюсь и потеряла мысль. Дайте мне секунду подсмотреть в шпаргалку.</div></div>
+      <div class="body-text" style="font-size:13px;color:var(--text-lt);margin-top:8px;line-height:1.5;">Это расслабляет группу: они видят, что ты живая, а не робот. И им тоже становится можно быть неидеальными.</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb8" style="color:var(--terra);">12. Мы не укладываемся в тайминг</div>
+      <div class="body-text" style="font-size:14px;color:var(--text-md);line-height:1.6;margin-bottom:10px;">Если основной круг затянулся — мягко переходи к завершению.</div>
+      <div class="bubble"><div class="bubble-text">Девочки, мы так глубоко пошли в истории, что время незаметно пролетело. Давайте перейдём сразу к завершающему кругу: одно слово, с чем вы уходите.</div></div>
+    </div>
+
+    </div>
+    <div class="refl-box">
+      <div class="refl-title">Твоя рефлексия</div><div class="refl-sub">Подумай над вопросом</div>
+      <div class="refl-q">Какая из ситуаций «аптечки» пугает тебя больше всего и почему?</div>
+      <textarea id="r4" placeholder="Напиши, что думаешь…"></textarea>
+      <div class="refl-hint" id="r4-hint">Ответь на вопрос, чтобы перейти дальше</div>
+    </div>
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-3')">←</button><button class="btn btn-primary" id="btn-4" onclick="go('s-q3')" disabled>Далее →</button></div>
+  </div>
+</div>
+
+
+
+<!-- КВИЗ 3 -->
+<div id="s-q3" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-badge">Мини-тест</div></div>
+  <div class="content">
+    <div class="eyebrow mb8">Этап 4 · Проверка</div>
+    <div class="quiz-q">Что делать, если участница говорит слишком долго?</div>
+    <div id="q3-opts">
+      <div class="q-opt" onclick="miniq('q3-opts',0,3,'q3-fb','btn-q3')">Помахать рукой, дать понять, что пора заканчивать</div>
+      <div class="q-opt" onclick="miniq('q3-opts',1,3,'q3-fb','btn-q3')">Написать в чате, что время кончается / кончилось</div>
+      <div class="q-opt" onclick="miniq('q3-opts',2,3,'q3-fb','btn-q3')">Аккуратно остановить её и передать слово другой</div>
+      <div class="q-opt" onclick="miniq('q3-opts',3,3,'q3-fb','btn-q3')">Аккуратно напомнить про тайминг и предложить завершить мысль одним-двумя предложениями</div>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-4')">←</button><button class="btn btn-primary" id="btn-q3" onclick="go('s-5')" disabled>К этапу 5 →</button></div>
+  </div>
+</div>
+
+<!-- ЭТАП 5 -->
+<div id="s-5" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-step">Этап 5 из 6</div></div>
+  <div class="prog-wrap"><div class="prog-track-row"><div class="prog-track"><div class="prog-fill" style="width:67%"></div></div></div><div class="prog-steps"><div class="p-step done" onclick="go('s-onboarding')" title="Вернуться к этому этапу"><div class="p-dot">0</div><div class="p-label">Ценности</div></div><div class="p-step done" onclick="go('s-1')" title="Вернуться к этому этапу"><div class="p-dot">1</div><div class="p-label">femina — это…</div></div><div class="p-step done" onclick="go('s-2')" title="Вернуться к этому этапу"><div class="p-dot">2</div><div class="p-label">Слушание</div></div><div class="p-step done" onclick="go('s-3')" title="Вернуться к этому этапу"><div class="p-dot">3</div><div class="p-label">Фасилитация</div></div><div class="p-step done" onclick="go('s-4')" title="Вернуться к этому этапу"><div class="p-dot">4</div><div class="p-label">Безопасность</div></div><div class="p-step cur"><div class="p-dot">5</div><div class="p-label">Забота</div></div><div class="p-step"><div class="p-dot">6</div><div class="p-label">Первый шаг</div></div><div class="p-step"><div class="p-dot">7</div><div class="p-label">Итоговый тест</div></div><div class="p-step"><div class="p-dot">8</div><div class="p-label">Результат</div></div></div></div>
+<div class="content">
+    <div class="eyebrow mb8">Этап 5 · 10 мин</div><div class="display-sm mb10">Границы & забота о себе</div><div class="body-text mb20">Ты тоже человек. Как не выгореть и восстанавливаться после встреч.</div>
+    <div class="card-cream" style="text-align:center;padding:22px;"><div class="quote">Ты не можешь наполнить других из пустого сосуда.</div></div>
+    <div class="card"><div class="eyebrow mb10">Мини-практика перед эфиром</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:24px;height:24px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;">1</div><div style="font-size:14px;color:var(--text-md);padding-top:3px;line-height:1.55;">Сядь удобно. Обе стопы на полу, спина прямая.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:24px;height:24px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;">2</div><div style="font-size:14px;color:var(--text-md);padding-top:3px;line-height:1.55;">Закрой глаза. Сделай <strong style="color:var(--text-dk);">три глубоких вдоха</strong> и медленных выдоха.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:24px;height:24px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;">3</div><div style="font-size:14px;color:var(--text-md);padding-top:3px;line-height:1.55;">Задай вопрос себе: <strong style="color:var(--text-dk);">«С какой энергией я хочу выйти сегодня?»</strong> Обозначь эту энергию, дай ей войти в тело.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:24px;height:24px;border-radius:50%;background:var(--terra-pale);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--terra);flex-shrink:0;">4</div><div style="font-size:14px;color:var(--text-md);padding-top:3px;line-height:1.55;">Открой глаза. <strong style="color:var(--text-dk);">Улыбнись себе в камеру.</strong></div></div>
+      </div>
+    </div>
+    <div class="card"><div class="eyebrow mb10">Чек-лист до эфира</div>
+      <div class="do-row"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text">Ноутбук к сети, телефон заряжен, Wi-Fi работает, есть мобильная точка.</div></div>
+      <div class="do-row"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text">Режим «Не беспокоить» на ноутбуке и телефоне включён.</div></div>
+      <div class="do-row"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text">Домочадцы предупреждены, дверь закрыта, табличка «В эфире».</div></div>
+      <div class="do-row"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text">Источник света передо мной, лицо ясно видно на камере.</div></div>
+      <div class="do-row" style="border-bottom:none;"><div class="do-icon" style="color:var(--sage);">✓</div><div class="do-text">Стакан воды, удобный стул, камера напротив, блокнот и ручка.</div></div>
+    </div>
+    <div class="card"><div class="eyebrow mb8">После встречи</div><div class="accent-teal"><div style="font-size:14px;color:var(--text-md);line-height:1.65;">Обязательно «стряхни» чужую боль — душ, прогулка. <strong style="color:var(--sage);">Не носи её в себе.</strong></div></div><div class="body-text mt8" style="font-size:14px;">Ты можешь триггериться. Это нормально. Глубокий вдох, ноги на пол — и ты снова здесь.</div></div>
+    <div class="refl-box">
+      <div class="refl-title">Твоя рефлексия</div><div class="refl-sub">Подумай над вопросом</div>
+      <div class="refl-q">Что поможет тебе восстановиться после эмоционально тяжёлой встречи?</div>
+      <textarea id="r5" placeholder="Напиши, что думаешь…" ></textarea>
+      <div class="refl-hint" id="r5-hint">Ответь на вопрос, чтобы перейти дальше</div>
+    </div>
+    <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-q3')">←</button><button class="btn btn-primary" id="btn-5" onclick="go('s-test')" disabled>Далее →</button></div>
+  </div>
+</div>
+
+<!-- ФИНАЛЬНЫЙ ТЕСТ -->
+<div id="s-test" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-badge">Финальный тест</div></div>
+  <div class="prog-wrap"><div class="prog-track-row"><div class="prog-track"><div class="prog-fill" style="width:100%"></div></div></div><div class="prog-steps"><div class="p-step done" onclick="go('s-onboarding')" title="Вернуться к этому этапу"><div class="p-dot">0</div><div class="p-label">Ценности</div></div><div class="p-step done" onclick="go('s-1')" title="Вернуться к этому этапу"><div class="p-dot">1</div><div class="p-label">femina — это…</div></div><div class="p-step done" onclick="go('s-2')" title="Вернуться к этому этапу"><div class="p-dot">2</div><div class="p-label">Слушание</div></div><div class="p-step done" onclick="go('s-3')" title="Вернуться к этому этапу"><div class="p-dot">3</div><div class="p-label">Фасилитация</div></div><div class="p-step done" onclick="go('s-4')" title="Вернуться к этому этапу"><div class="p-dot">4</div><div class="p-label">Безопасность</div></div><div class="p-step done" onclick="go('s-5')" title="Вернуться к этому этапу"><div class="p-dot">5</div><div class="p-label">Забота</div></div><div class="p-step cur"><div class="p-dot">7</div><div class="p-label">Итоговый тест</div></div><div class="p-step"><div class="p-dot">8</div><div class="p-label">Результат</div></div></div></div>
+<div class="content">
+    <div id="test-intro">
+      <div class="eyebrow mb8">Этап 6 · Финальный тест</div>
+      <div class="display-sm mb12">Проверь себя</div>
+      <div class="card-cream" style="margin-bottom:12px;">
+        <div class="body-text" style="font-size:14px;">Всё, что ты изучила — это твои рабочие инструменты на каждой встрече. Рекомендуем к ним возвращаться.</div>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="body-text" style="font-size:14px;">Ты прошла теоретический блок для ведущих женских встреч. Самое время проверить твои знания — пройти итоговый тест.</div>
+      </div>
+      <div class="card-teal" style="margin-bottom:12px;">
+        <div class="eyebrow mb6" style="color:var(--sage);">Как устроен тест</div>
+        <div class="body-text" style="color:var(--sage);font-size:14px;">10 вопросов — 9 ситуационных и 1 открытый. Для успешного прохождения нужно ответить верно на 8 из 9 закрытых вопросов. Открытый вопрос — рефлексия, правильного ответа нет.</div>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="eyebrow mb8">Что проверяем</div>
+        <div class="do-row"><div class="do-icon">⏺</div><div class="do-text">Роль ведущей и принципы femina</div></div>
+        <div class="do-row"><div class="do-icon">⏺</div><div class="do-text">Работу с тяжёлыми ситуациями на встрече</div></div>
+        <div class="do-row"><div class="do-icon">⏺</div><div class="do-text">Тайминг, тишину, передачу микрофона</div></div>
+        <div class="do-row" style="border-bottom:none;"><div class="do-icon">⏺</div><div class="do-text">Язык и ценности сообщества</div></div>
+      </div>
+      <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-5')" style="flex:none;">←</button><button class="btn btn-primary" onclick="startTest()">Начать тест →</button></div>
+    </div>
+    <div id="test-main" style="display:none;">
+      <div class="eyebrow mb8">10 вопросов · нужно 8 из 9 закрытых</div>
+      <div class="test-dots" id="test-dots"></div>
+      <div id="test-q-wrap"></div>
+      <div class="q-fb" id="test-fb"></div>
+      <div class="nav-row"><button class="btn btn-ghost" onclick="go('s-5')" style="flex:none;">←</button><button class="btn btn-primary" id="test-next" onclick="testNext()" disabled>Следующий вопрос →</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- СЛЕДУЮЩИЙ ЭТАП -->
+<div id="s-next" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-step">Следующий этап</div></div>
+  <div class="content" style="max-width:640px;">
+    <div class="eyebrow mb8">Теоретический блок пройден</div>
+    <div class="display-sm mb20">Твой путь ведущей</div>
+        <div class="card" style="margin-top:16px;margin-bottom:16px;">
+          <div class="body-text" style="font-size:15px;color:var(--text-dk);line-height:1.7;">
+            <strong>Привет, дорогая!</strong><br>
+            Поздравляю с завершением онбординга и жду нашей первой встречи с тобой.<br><br>
+            И пара важных шагов до: сходи на три встречи до своей, открывайся, проявляйся, изучай каково это — быть участницей, и тебе будет проще почувствовать, каково это — быть ведущей. Жду нашего знакомства!
+          </div>
+          <div style="font-size:13px;color:var(--terra);font-weight:500;margin-top:10px;">— Таисия, забота о ведущих</div>
+        </div>
+        <div style="margin-top:0;">
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
+  <iframe id="video2-iframe" src="" data-src="https://drive.google.com/file/d/1zmGK_33u7vHPEoJBlOSfVy2ihOtwF_8i/preview"
+    frameborder="0" allow="autoplay; fullscreen" allowfullscreen
+    style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;display:none;">
+  </iframe>
+  <div id="video2-poster" onclick="startVideo('video2')" style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;cursor:pointer;overflow:hidden;">
+    <img src="https://lh3.googleusercontent.com/d/1EzaAolJoIjsLu6EyYh1IbfGcALRiQq6m" onerror="this.onerror=null;this.src='https://drive.google.com/thumbnail?id=1EzaAolJoIjsLu6EyYh1IbfGcALRiQq6m&sz=w1280'" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;" draggable="false"/>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:rgba(196,105,74,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(0,0,0,.3);">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><polygon points="10,6 22,13 10,20" fill="white"/></svg>
+    </div>
+  </div>
+</div>
+      </div>
+        <div class="card" style="margin-top:24px;">
+      <div class="eyebrow mb16">Путь ведущей</div>
+      <div style="position:relative;padding-left:32px;">
+        <div style="position:absolute;left:10px;top:6px;bottom:6px;width:2px;background:linear-gradient(to bottom,var(--terra),var(--peach),var(--sage-lt),var(--sage),var(--beige));border-radius:2px;"></div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">✓</div>
+          <div><div class="p-title" style="text-decoration:line-through;opacity:.5;">femina — это…</div><div class="p-text" style="opacity:.5;">Кто такая ведущая и на чём держится формат</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">✓</div>
+          <div><div class="p-title" style="text-decoration:line-through;opacity:.5;">Слушание</div><div class="p-text" style="opacity:.5;">Что делать, чего не делать, как слышать не слова, а чувство</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--terra-lt);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">✓</div>
+          <div><div class="p-title" style="text-decoration:line-through;opacity:.5;">Фасилитация встречи</div><div class="p-text" style="opacity:.5;">Структура, тайминг, скрипты и этикет</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--terra-lt);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">✓</div>
+          <div><div class="p-title" style="text-decoration:line-through;opacity:.5;">Безопасность</div><div class="p-text" style="opacity:.5;">Аптечка ведущей — 12 ситуаций, язык femina</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--sage-lt);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">✓</div>
+          <div><div class="p-title" style="text-decoration:line-through;opacity:.5;">Забота о себе</div><div class="p-text" style="opacity:.5;">Как не выгореть и восстанавливаться после встреч</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:12px;color:#fff;flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">✓</div>
+          <div><div class="p-title" style="text-decoration:line-through;opacity:.5;">Итоговый тест</div><div class="p-text" style="opacity:.5;">Проверь свои знания</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--beige);border:2px solid var(--sand);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--text-lt);flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">◆</div>
+          <div><div class="p-title">Практический блок</div><div class="p-text">Первые встречи в кругу ведущих и кураторок</div></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--beige);border:2px solid var(--sand);display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:14px;color:var(--text-lt);flex-shrink:0;margin-left:-32px;z-index:1;position:relative;">✦</div>
+          <div><div class="p-title">Сертификация</div><div class="p-text"></div></div>
+        </div>
+      </div>
+    </div>
+
+      <div class="card" style="margin-top:20px;">
+        <div style="font-size:15px;color:var(--text-dk);line-height:1.7;">Ты справилась — и мы уже ждём нашей встречи с тобой! Кураторка скоро напишет, чтобы назначить время. Если хочешь — можешь написать сама: <a href="https://t.me/cosmetologist_svetlana" target="_blank" style="color:var(--terra);font-weight:500;">@cosmetologist_svetlana</a></div>
+      </div>
+      <div class="nav-row" style="margin-top:16px;">
+        <button class="btn btn-ghost" onclick="go('s-result')">← Назад</button>
+      </div>
+  </div>
+</div>
+
+<!-- РЕЗУЛЬТАТ -->
+<div id="s-result" class="screen">
+  <div class="top-bar"><div class="logo">FEMINA</div><div class="top-step">Результат</div></div>
+  <div class="prog-wrap"><div class="prog-track-row"><div class="prog-track"><div class="prog-fill" style="width:100%"></div></div></div><div class="prog-steps"><div class="p-step done" onclick="go('s-onboarding')" title="Вернуться к этому этапу"><div class="p-dot">0</div><div class="p-label">Ценности</div></div><div class="p-step done" onclick="go('s-1')" title="Вернуться к этому этапу"><div class="p-dot">1</div><div class="p-label">femina — это…</div></div><div class="p-step done" onclick="go('s-2')" title="Вернуться к этому этапу"><div class="p-dot">2</div><div class="p-label">Слушание</div></div><div class="p-step done" onclick="go('s-3')" title="Вернуться к этому этапу"><div class="p-dot">3</div><div class="p-label">Фасилитация</div></div><div class="p-step done" onclick="go('s-4')" title="Вернуться к этому этапу"><div class="p-dot">4</div><div class="p-label">Безопасность</div></div><div class="p-step done" onclick="go('s-5')" title="Вернуться к этому этапу"><div class="p-dot">5</div><div class="p-label">Забота</div></div><div class="p-step done" onclick="go('s-test')" title="Вернуться к этому этапу"><div class="p-dot">7</div><div class="p-label">Итоговый тест</div></div><div class="p-step cur"><div class="p-dot">8</div><div class="p-label">Результат</div></div></div></div>
+  <div class="content" style="max-width:640px;">
+    <div id="result-content"></div>
+  </div>
+</div>
+
+<script>
+const AIRTABLE_TOKEN='patRbKl3Q5r93Mxfg.82123cd91d8963b767c5c1bd3f9ff7f2f0a6061e8e2cc5a2ab2906f8c4041d2e';
+const AIRTABLE_BASE='appuIsTKUOxZCqmzX';
+const AIRTABLE_TABLE='tblY7BZvvdFK7Oor2';
+const miniResults={};
+function saveMiniResult(qId,chosen,correct){miniResults[qId]={answer:chosen,correct:chosen===correct};}
+function sendToSheets(){
+  const name=localStorage.getItem('femina_name')||'—';
+  const track=localStorage.getItem('femina_track')==='1'?'Новая в femina':'Участница femina';
+  const score=localStorage.getItem('femina_test_score')||'—';
+  const date=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  const open=localStorage.getItem('femina_open_answer')||'—';
+  const refData=JSON.parse(localStorage.getItem('femina_refls')||'{}');
+  // Читаем количество попыток (инкремент происходит в showResult)
+  const attempts=parseInt(localStorage.getItem('femina_test_attempts')||'1');
+  const fields={'Имя и фамилия':name,'Трек':track,'Дата прохождения':date,
+    'Мини-тест 1':miniResults['q1-fb']?(miniResults['q1-fb'].correct?'✓':'✗'):'—',
+    'Мини-тест 2':miniResults['q2-fb']?(miniResults['q2-fb'].correct?'✓':'✗'):'—',
+    'Мини-тест 3':miniResults['q3-fb']?(miniResults['q3-fb'].correct?'✓':'✗'):'—',
+    'Итоговый тест':score,'Попыток теста':attempts,'Ошибки в тесте':testWrong.length?testWrong.join(', '):'нет','Открытый вопрос':open,
+    'Рефлексия 1':refData[1]||'—','Рефлексия 2':refData[2]||'—',
+    'Рефлексия 3':refData[3]||'—','Рефлексия 4':refData[4]||'—',
+    'Рефлексия 5':refData[5]||'—'};
+  fetch('https://api.airtable.com/v0/'+AIRTABLE_BASE+'/'+AIRTABLE_TABLE,{
+    method:'POST',headers:{'Authorization':'Bearer '+AIRTABLE_TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify({fields})
+  }).catch(function(){});
+}
+function showFinish(){var m=document.getElementById('finish-msg');if(m)m.style.display='block';}
+function restoreResult(){
+  const n=localStorage.getItem('femina_name')||userName||'подруга';
+  const score=localStorage.getItem('femina_test_score')||'—';
+  const open=localStorage.getItem('femina_open_answer')||'—';
+  const rc=document.getElementById('result-content');
+  if(!rc||rc.innerHTML.trim()!=='')return;
+  const passed=score.indexOf('/')>-1&&parseInt(score.split('/')[0])>=8;
+  if(passed){
+    rc.innerHTML='<div style="text-align:center;padding:24px 0;"><div class="display mb8">Отлично, '+n+'!</div><div class="card-teal" style="display:inline-block;padding:16px 32px;margin:16px 0;"><div class="eyebrow mb4" style="color:var(--sage);">Результат</div><div style="font-size:36px;font-weight:500;color:var(--sage);">'+score+'</div></div></div>'+
+    '<div class="card-cream"><div class="eyebrow mb8">Ответ на открытый вопрос</div><div class="body-text" style="font-size:14px;font-style:italic;word-break:break-word;overflow-wrap:break-word;white-space:pre-wrap;">'+open+'</div></div>';
+  }else{
+    rc.innerHTML='<div style="text-align:center;padding:24px 0;"><div style="font-size:40px;margin-bottom:14px;">○</div><div class="display mb8">Результат: '+score+'</div><div class="body-text">Нужно 8 из 9. Перейди к тесту через прогресс-бар и попробуй снова.</div></div>';
+  }
+}
+
+
+let userName='',userTrack=0,aptIdx=0,aptMaxSeen=0,maxReachedStage=-1;
+
+// Stage order for navigation: -1=none, 0=onboarding, 1-6=stages, 7=test, 8=result, 9=meeting, 10=cert
+const STAGE_ORDER=['s-onboarding','s-1','s-2','s-3','s-4','s-5','s-test','s-result'];
+const STAGE_NUM={'s-onboarding':0,'s-1':1,'s-2':2,'s-3':3,'s-4':4,'s-5':5,'s-test':6,'s-result':7};
+
+// Navigation targets for each dot index (0-6)
+const DOT_TARGETS=['s-onboarding','s-1','s-2','s-3','s-4','s-5','s-test','s-result'];
+const DOT_LABELS=['Ценности','femina — это…','Слушание','Фасилитация','Безопасность','Забота','Итоговый тест','Результат'];
+
+function updateProgressBar(currentScreenId){
+  // Find the prog-steps div on the current active screen
+  const screen=document.getElementById(currentScreenId);
+  if(!screen) return;
+  const progSteps=screen.querySelector('.prog-steps');
+  if(!progSteps) return;
+
+  const curStageNum=STAGE_NUM[currentScreenId]??-1;
+
+  // Rebuild dots
+  let html='';
+  for(let i=0;i<DOT_TARGETS.length;i++){
+    const target=DOT_TARGETS[i];
+    const targetNum=STAGE_NUM[target]??i;
+    const tp=!!localStorage.getItem('femina_test_score');
+  const isReached=targetNum<=maxReachedStage||(tp&&currentScreenId==='s-result');
+    const isCur=target===currentScreenId || (curStageNum===-1 && i===0);
+
+    let cls='p-step';
+    if(isCur) cls+=' cur';
+    else if(isReached) cls+=' done';
+
+    const clickable=isReached && !isCur;
+    const onclick=clickable?` onclick="go('${target}')" title="Вернуться к этому этапу" style="cursor:pointer;"`:' style="cursor:default;"';
+
+    html+=`<div class="${cls}"${onclick}><div class="p-dot">${i}</div><div class="p-label">${DOT_LABELS[i]}</div></div>`;
+  }
+  progSteps.innerHTML=html;
+}
+const APT_TOTAL=12;
+const refls={};
+let testIdx=0,testScore=0,testAnswered=false;
+const TQ=[
+  {q:"Главная роль ведущей femina — это…",o:["Давать советы из личного опыта","Создавать безопасное пространство и следить за таймингом","Быть психологом для участниц","Решать проблемы участниц"],c:1,ok:"Верно! Ты здесь фасилитатор — создаёшь пространство, держишь тайминг.",no:"Правильный ответ: создавать безопасное пространство и следить за таймингом."},
+  {q:"Ситуация на встрече: «Участница только открылась, начала плакать. Ты чувствуешь желание сказать ей — не плачь, всё будет хорошо». Твои действия?",o:["Говорю «не плачь, всё будет хорошо» — чтобы успокоить","Останавливаюсь, смотрю с теплом, говорю: «Мы с тобой. Дыши. Твои чувства важны»","Переключаю внимание на следующую участницу","Предлагаю записаться к психологу прямо сейчас"],c:1,ok:"Верно! Слёзы в femina — признак того, что процесс идёт. Присутствуй, не чини.",no:"Правильный ответ: Останавливаюсь, смотрю с теплом, говорю: «Мы с тобой. Дыши. Твои чувства важны»."},
+  {q:"Ситуация на встрече: «Участница начала давать советы — Ой, а ты попробуй вот это…». Твои действия?",o:["Жду, пока сама остановится — неудобно перебивать","Говорю: «Девочки, напомню правило: мы не даём советов. [Имя], как эта история отозвалась ТЕБЕ?»","Соглашаюсь с её советом — вдруг он правда хороший","Завершаю встречу досрочно"],c:1,ok:"Верно! Мягко, но сразу — это твоя обязанность как ведущей.",no:"Правильный ответ: Говорю: «Девочки, напомню правило: мы не даём советов. [Имя], как эта история отозвалась ТЕБЕ?»"},
+  {q:"Ситуация на встрече: «В группе 8 человек. Одна участница говорит уже 9 минут и не останавливается. Остальные начинают скучать». Твои действия?",o:["Жду — вдруг сама закончит","Говорю: «[Имя], очень ценно, но у нас осталось 30 секунд. Давай подведём итог одной фразой?»","Отключаю её микрофон без предупреждения","Даю ещё 5 минут — история важная"],c:1,ok:"Верно! Ты хранительница времени для всех — это твоя ответственность.",no:"Правильный ответ: Говорю: «[Имя], очень ценно, но у нас осталось 30 секунд. Давай подведём итог одной фразой?»"},
+  {q:"Ситуация на встрече: «Участница рассказывает о тяжёлой истории (насилие), и ты сама поплыла — чувствуешь ком в горле». Твои действия?",o:["Делаю вид, что всё хорошо, и продолжаю как ни в чём не бывало","Прерываю встречу — слишком тяжело","Делаю вдох, ставлю ноги на пол, говорю: «Спасибо тебе за эту честность. Твоя история очень отозвалась мне, у меня даже ком в горле»","Прошу другую участницу взять слово, чтобы выиграть время"],c:2,ok:"Верно! Честность возвращает тебя в тело. Ты человек — и это расслабляет группу.",no:"Правильный ответ: Делаю вдох, ставлю ноги на пол, говорю: «Спасибо тебе за эту честность. Твоя история очень отозвалась мне, у меня даже ком в горле»."},
+  {q:"Ситуация на встрече: «Во время вводной речи ты потеряла мысль и забыла, что говорить дальше». Твои действия?",o:["Замолкаю и жду, пока кто-нибудь заговорит","Говорю: «Девочки, я немного волнуюсь и потеряла мысль. Дайте мне секунду подсмотреть в шпаргалку»","Делаю вид, что так и было задумано","Передаю ведение другой участнице"],c:1,ok:"Верно! Это расслабляет группу — им тоже становится можно быть неидеальными.",no:"Правильный ответ: Говорю: «Девочки, я немного волнуюсь и потеряла мысль. Дайте мне секунду подсмотреть в шпаргалку»."},
+  {q:"Ситуация на встрече: «Одна из участниц начала обесценивать историю другой: «Ну это вообще не проблема, у людей хуже бывает». Остальные молчат». Твои действия?",o:["Жду, пока сама успокоится — не хочу создавать конфликт","Соглашаюсь, чтобы разрядить обстановку","Предупреждаю один раз. Если продолжает — удаляю из встречи или предлагаю всем перейти на новую ссылку","Завершаю встречу и ничего не объясняю"],c:2,ok:"Верно! Безопасность круга — твоя ответственность. Одно предупреждение, затем действие.",no:"Правильный ответ: Предупредить один раз. Если продолжает — удалить из встречи или предложить всем перейти на новую ссылку."},
+  {q:"Какое из этих утверждений отражает ценности сообщества femina?",o:["Мы даём советы, если нас попросили","Мы делимся личным опытом и не учим жить","Ведущая отвечает за эмоциональное состояние участниц","Встречи открыты для всех желающих без ограничений"],c:1,ok:"Верно! femina — пространство личного опыта, а не советов и экспертизы.",no:"Правильный ответ: Мы делимся личным опытом и не учим жить."},
+  {q:"Ситуация на встрече: «Участница молчит после вопроса-крючка. Пауза уже 8 секунд. Остальные тоже молчат». Твои действия?",o:["Сразу перехожу к другой участнице","Повторяю вопрос громче и чётче","Досчитываю до 10, и если молчат — говорю «Я могу начать с себя» и рассказываю свою историю","Завершаю эту тему и предлагаю новый вопрос"],c:2,ok:"Верно! Тишина пугает только ведущую. Для участниц — это момент осмысления.",no:"Правильный ответ: Досчитываю до 10, и если молчат — говорю «Я могу начать с себя» и рассказываю свою историю."}
+,
+  {q:"Открытый вопрос: Опиши своими словами — что значит для тебя быть ведущей femina? Что ты берёшь с собой из этого курса?",o:null,c:null,ok:"",no:"",open:true},
+];
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='s-test')initTest();
+  if(id==='s-result'&&localStorage.getItem('femina_test_score')){restoreResult();}
+
+  // Track maximum reached stage
+  const stageIdx=STAGE_ORDER.indexOf(id);
+  if(stageIdx>maxReachedStage) maxReachedStage=stageIdx;
+
+  // Update progress bar on current screen
+  updateProgressBar(id);
+
+  // Restore reflection button states when returning to a stage
+  const stageMap={'s-1':1,'s-2':2,'s-3':3,'s-4':4,'s-5':5};
+  if(stageMap[id]){
+    const n=stageMap[id];
+    const ta=document.getElementById('r'+n);
+    if(ta&&refls[n]){ta.value=refls[n];checkR(n);}
+  }
+}
+
+function selectTrack(n){
+  userTrack=n;
+  document.getElementById('t1').classList.toggle('sel',n===1);
+  document.getElementById('t2').classList.toggle('sel',n===2);
+  checkStart();
+}
+
+function checkStart(){
+  const v=document.getElementById('name-input').value.trim();
+  const hasTwoWords=v.length>0&&v.split(/\s+/).filter(w=>w.length>0).length>=2;
+  document.getElementById('start-btn').disabled=!(hasTwoWords&&userTrack>0);
+  document.getElementById('name-hint').style.display=v.length>0&&!hasTwoWords?'block':'none';
+}
+
+function togglePracticeVideo(){
+  var el=document.getElementById('practice-video-embed');
+  var btn=document.getElementById('practice-video-btn');
+  if(el.style.display==='none'){el.style.display='block';btn.textContent='✕ Закрыть видео';}
+  else{el.style.display='none';btn.textContent='▶ Узнать о практическом блоке';}
+}
+
+function playVideo(id){
+  var poster=document.getElementById(id+'-poster');
+  if(poster) poster.style.display='none';
+}
+
+function toggleWelcomeVideo(){
+  var el=document.getElementById('welcome-video-embed');
+  var btn=document.getElementById('welcome-video-btn');
+  if(el.style.display==='none'){el.style.display='block';btn.textContent='✕ Закрыть видео';}
+  else{el.style.display='none';btn.innerHTML='▶ Посмотреть приветственное видео';btn.style.background='#C4694A';}
+}
+
+function startCourse(){
+  userName=document.getElementById('name-input').value.trim();
+  if(!userName||!userTrack)return;
+  localStorage.setItem('femina_name',userName);
+  localStorage.setItem('femina_track',String(userTrack));
+  go('s-onboarding');
+}
+
+function checkR(n){
+  const v=document.getElementById('r'+n).value.trim();
+  refls[n]=v;
+  const reflOk=v.length>=10;
+  // For etap 3 (n=3): also require all apteyka cards seen
+  const ok = reflOk;
+  const b=document.getElementById('btn-'+n);
+  const h=document.getElementById('r'+n+'-hint');
+  if(b) b.disabled=!ok;
+  if(h) h.style.display=reflOk?'none':'block';
+  localStorage.setItem('femina_refls',JSON.stringify(refls));
+}
+
+// Пояснения для мини-квизов при неправильном ответе
+const MINIQ_EXPLAIN={
+  'q1-fb':{
+    correct:'Создавать безопасное пространство и следить за таймингом',
+    explain:'Ведущая femina — фасилитатор, а не эксперт. Её задача не лечить и не учить, а держать безопасное пространство и следить, чтобы у каждой участницы было время высказаться. Вернись к блоку «Кто такая ведущая femina» и перечитай раздел про суперсилу.',
+    screen:'s-1'
+  },
+  'q2-fb':{
+    correct:'Мягко останавливаю: «Напомню правило — мы не даём советов. [Имя], как эта история отозвалась тебе?»',
+    explain:'Ведущая обязана сразу и мягко остановить советы — это её прямая ответственность. Ждать или соглашаться разрушает безопасность круга. Правильно: назвать правило и сразу перевести фокус на чувства через «Я». Вернись к блоку «Что надо делать» на Этапе 2.',
+    screen:'s-2'
+  },
+  'q3-fb':{
+    correct:'Аккуратно напомнить про тайминг и предложить завершить мысль одним-двумя предложениями',
+    explain:'Ты хранительница времени для всех участниц. Помахать рукой — слишком мягко и легко игнорировать. Передать слово другой — значит оборвать без объяснения. Правильно: назвать имя, мягко остановить и попросить сформулировать главную мысль. Вернись к ситуации 9 в аптечке.',
+    screen:'s-4'
+  }
+};
+
+function miniq(optId,chosen,correct,fbId,nextId){
+  saveMiniResult(fbId,chosen,correct);
+  const opts=document.querySelectorAll('#'+optId+' .q-opt');
+  opts.forEach(o=>{o.classList.add('answered');o.onclick=null;});
+  opts[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)opts[correct].classList.add('correct');
+  const fb=document.getElementById(fbId);
+  const nb=document.getElementById(nextId);
+  if(chosen===correct){
+    fb.className='q-fb show ok';
+    fb.textContent='✓ Верно!';
+    if(nb)nb.disabled=false;
+  } else {
+    fb.className='q-fb show no';
+    const ex=MINIQ_EXPLAIN[fbId];
+    const screenLink=ex?` <button onclick="go('${ex.screen}')" style="background:none;border:none;color:var(--terra);font-family:'Rubik',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:underline;padding:0;">Вернуться и изучить →</button>`:'';
+    fb.innerHTML=`<strong>Не совсем.</strong> Правильный ответ: <em>${ex?ex.correct:''}</em>.<br><br>${ex?ex.explain:''}${screenLink}`;
+    if(nb)nb.disabled=false;
+  }
+}
+
+function aptPrev(){
+  document.getElementById('apt-'+aptIdx).classList.remove('active');
+  aptIdx=(aptIdx-1+APT_TOTAL)%APT_TOTAL;
+  document.getElementById('apt-'+aptIdx).classList.add('active');
+  document.getElementById('apt-count').textContent='Ситуация '+(aptIdx+1)+' из '+APT_TOTAL;
+}
+function aptNext(){
+  document.getElementById('apt-'+aptIdx).classList.remove('active');
+  aptIdx=(aptIdx+1)%APT_TOTAL;
+  document.getElementById('apt-'+aptIdx).classList.add('active');
+  document.getElementById('apt-count').textContent='Ситуация '+(aptIdx+1)+' из '+APT_TOTAL;
+  if(aptIdx>aptMaxSeen) aptMaxSeen=aptIdx;
+  if(aptMaxSeen===APT_TOTAL-1){
+    const hint=document.getElementById('apt-seen-hint');
+    if(hint) hint.style.display='none';
+    const b4=document.getElementById('btn-4');
+    if(b4) b4.disabled=false;
+  }
+}
+
+function chk(el){
+  const box=el.querySelector('.chk-box');
+  const on=box.dataset.on==='1';
+  if(!on){box.dataset.on='1';box.style.background='var(--sage)';box.style.borderColor='var(--sage)';box.innerHTML='<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5l3 3L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+  else{box.dataset.on='0';box.style.background='';box.style.borderColor='var(--sand)';box.innerHTML='';}
+}
+
+function cpText(btn,text){
+  if(navigator.clipboard)navigator.clipboard.writeText(text).catch(()=>{});
+  const o=btn.textContent;btn.textContent='✓ Скопировано';
+  setTimeout(()=>{btn.textContent=o;},1800);
+}
+
+function showPath(){
+  const t=parseInt(localStorage.getItem('femina_track'))||userTrack;
+  document.getElementById('track-path-1').style.display=t===1?'block':'none';
+  document.getElementById('track-path-2').style.display=t===2?'block':'none';
+}
+
+let openAnswer='',testWrong=[]; // stores open question answer
+
+function startTest(){
+  document.getElementById('test-intro').style.display='none';
+  document.getElementById('test-main').style.display='';
+  initTest();
+}
+
+function initTest(){
+  testIdx=0;testScore=0;testAnswered=false;testWrong=[];openAnswer='';
+  // Build dots dynamically
+  const dots=document.getElementById('test-dots');
+  dots.innerHTML=TQ.map((_,i)=>'<div class="t-dot'+(i===0?' cur':'')+'"></div>').join('');
+  renderTQ();
+}
+
+function renderTQ(){
+  const q=TQ[testIdx];
+  document.querySelectorAll('#test-dots .t-dot').forEach((d,i)=>{d.className='t-dot'+(i<testIdx?' done':i===testIdx?' cur':'');});
+  const closedCount=TQ.filter(x=>!x.open).length;
+  const nb=document.getElementById('test-next');
+  nb.textContent=testIdx<TQ.length-1?'Следующий вопрос →':'Посмотреть результат →';
+  const fb=document.getElementById('test-fb');fb.className='q-fb';fb.textContent='';
+  testAnswered=false;
+
+  if(q.open){
+    // Open question
+    nb.disabled=false; // always enabled after typing
+    document.getElementById('test-q-wrap').innerHTML=
+      '<div class="eyebrow mb8" style="margin-top:4px;">Вопрос '+(testIdx+1)+' из '+TQ.length+' · Открытый</div>'+
+      '<div class="quiz-q">'+q.q+'</div>'+
+      '<textarea id="open-answer" placeholder="Напиши своими словами…" style="width:100%;min-height:120px;border:1.5px solid var(--beige);border-radius:8px;background:var(--white);color:var(--text-dk);font-family:\'Rubik\',sans-serif;font-size:14px;font-weight:300;line-height:1.6;padding:11px 13px;resize:vertical;outline:none;margin-top:4px;" oninput="openAnswer=this.value;document.getElementById(\'test-next\').disabled=this.value.trim().length<10;"></textarea>'+
+      '<div style="font-size:12px;color:var(--text-lt);margin-top:4px;">Минимум 10 символов</div>';
+    nb.disabled=true;
+    testAnswered=true; // open question always "answered" once typed
+  } else {
+    nb.disabled=true;
+    document.getElementById('test-q-wrap').innerHTML=
+      '<div class="eyebrow mb8" style="margin-top:4px;">Вопрос '+(testIdx+1)+' из '+TQ.length+'</div>'+
+      '<div class="quiz-q">'+q.q+'</div>'+
+      '<div id="final-opts">'+q.o.map((o,i)=>'<div class="q-opt" onclick="answerFinal('+i+')">'+o+'</div>').join('')+'</div>';
+  }
+}
+
+function answerFinal(chosen){
+  if(testAnswered)return;testAnswered=true;
+  const q=TQ[testIdx];
+  const opts=document.querySelectorAll('#final-opts .q-opt');
+  opts.forEach(o=>{o.classList.add('answered');o.onclick=null;});
+  opts[chosen].classList.add(chosen===q.c?'correct':'wrong');
+  if(chosen!==q.c)opts[q.c].classList.add('correct');
+  if(chosen===q.c){testScore++;}else{testWrong.push(testIdx+1);}
+  const fb=document.getElementById('test-fb');
+  fb.className='q-fb show '+(chosen===q.c?'ok':'no');
+  fb.textContent=chosen===q.c?'✓ '+q.ok:q.no;
+  document.getElementById('test-next').disabled=false;
+}
+
+function testNext(){
+  if(!testAnswered)return;
+  if(testIdx<TQ.length-1){
+    testIdx++;renderTQ();
+  }else{
+    // Последний вопрос пройден — засчитываем одну попытку
+    const _att=(parseInt(localStorage.getItem('femina_test_attempts')||'0')+1);
+    localStorage.setItem('femina_test_attempts',_att);
+    showResult();
+  }
+}
+
+function showResult(){
+  go('s-result');
+  updateProgressBar('s-test');
+  const closedTotal=TQ.filter(x=>!x.open).length;
+  const pass=testScore>=8;
+  const n=localStorage.getItem('femina_name')||userName||'подруга';
+  const rc=document.getElementById('result-content');
+  // Save open answer to localStorage for curator report
+  localStorage.setItem('femina_open_answer', openAnswer);
+  localStorage.setItem('femina_test_score', testScore+'/'+closedTotal);
+  if(pass)sendToSheets();
+  localStorage.setItem('femina_completed', new Date().toLocaleDateString('ru-RU'));
+
+  if(pass){
+    rc.innerHTML='<div style="text-align:center;padding:8px 0 24px;"><div class="display mb8">Отлично, '+n+'!</div><div class="body-text mb20">Поздравляем с прохождением теоретической части! Ты ответила верно на '+testScore+' из '+closedTotal+' вопросов.</div><div class="card-teal" style="display:inline-block;padding:16px 32px;text-align:center;"><div class="eyebrow mb4" style="color:var(--sage);">Результат теста</div><div style="font-family:\'Rubik\',sans-serif;font-size:40px;font-weight:500;color:var(--sage);">'+testScore+'/'+closedTotal+'</div></div></div>'+
+    '<div class="card-cream" style="margin-top:16px;"><div class="eyebrow mb8">Твой ответ на открытый вопрос</div><div class="body-text" style="font-size:14px;font-style:italic;word-break:break-word;overflow-wrap:break-word;white-space:pre-wrap;">'+openAnswer+'</div></div>'+
+    '<div class="nav-row center"><button class="btn btn-ghost" onclick="go(\'s-test\')">← К тесту</button><button class="btn btn-primary" onclick="go(\'s-next\')">Перейти на следующий этап →</button></div>';
+  }else{
+    const need=8;
+    rc.innerHTML='<div style="text-align:center;padding:8px 0 20px;"><div style="font-size:40px;margin-bottom:14px;">○</div><div class="display mb8">Почти готова!</div><div class="body-text mb16">Ты ответила верно на '+testScore+' из '+closedTotal+'. Нужно '+need+'. Попробуй снова.</div><div class="card-coral" style="display:inline-block;padding:16px 32px;text-align:center;"><div class="eyebrow mb4" style="color:var(--terra);">Результат</div><div style="font-family:\'Rubik\',sans-serif;font-size:40px;font-weight:500;color:var(--terra);">'+testScore+'/'+closedTotal+'</div></div></div>'+
+    '<div class="nav-row center"><button class="btn btn-ghost" onclick="go(\'s-5\')">← К этапу 5</button><button class="btn btn-primary" onclick="go(\'s-test\')">Пройти тест заново</button></div>';
+  }
+}
+
+// ── CURATOR REPORT ────────────────────────────────────────
+
+// ── CURATOR CODE ──────────────────────────────────────────
+// Replace demo codes with real curator codes before publishing
+
+
+
+
+
+
+function startVideo(id){
+  var poster = document.getElementById(id+'-poster');
+  var iframe = document.getElementById(id+'-iframe');
+  if(poster) poster.style.display='none';
+  if(iframe){
+    iframe.src = iframe.getAttribute('data-src');
+    iframe.style.display='block';
+  }
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  // Restore saved state
+  const sn=localStorage.getItem('femina_name');
+  const st=localStorage.getItem('femina_track');
+  if(sn){document.getElementById('name-input').value=sn;userName=sn;}
+  if(st)selectTrack(parseInt(st));
+
+  // Bind name input
+  document.getElementById('name-input').addEventListener('input', checkStart);
+
+  // Bind reflection textareas
+  for(let n=1;n<=5;n++){
+    (function(num){
+      const el=document.getElementById('r'+num);
+      if(el){
+        el.addEventListener('input',function(){checkR(num);});
+        el.addEventListener('keyup',function(){checkR(num);});
+      }
+    })(n);
+  }
+
+  // Bind curator code input — Enter submits
+  const codeEl=document.getElementById('curator-code');
+  if(codeEl){
+    codeEl.addEventListener('input',checkCode);
+    codeEl.addEventListener('keyup',checkCode);
+    codeEl.addEventListener('keydown',function(e){
+      if(e.key==='Enter'&&!document.getElementById('code-btn').disabled)submitCode();
+    });
+  }
+
+  checkStart();
+});
+
+</script>
+</body>
+</html>
