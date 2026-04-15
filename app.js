@@ -1,7 +1,4 @@
 // femina Academy — онбординг (Ступень 1). Логика экранов, тест, postMessage для iframe
-const AIRTABLE_TOKEN='patRbKl3Q5r93Mxfg.82123cd91d8963b767c5c1bd3f9ff7f2f0a6061e8e2cc5a2ab2906f8c4041d2e';
-const AIRTABLE_BASE='appuIsTKUOxZCqmzX';
-const AIRTABLE_TABLE='tblY7BZvvdFK7Oor2';
 const miniResults={};
 function saveMiniResult(qId,chosen,correct){miniResults[qId]={answer:chosen,correct:chosen===correct};}
 function sendToSheets(){
@@ -11,19 +8,24 @@ function sendToSheets(){
   const date=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
   const open=localStorage.getItem('femina_open_answer')||'—';
   const refData=JSON.parse(localStorage.getItem('femina_refls')||'{}');
-  // Читаем количество попыток (инкремент происходит в showResult)
   const attempts=parseInt(localStorage.getItem('femina_test_attempts')||'1');
-  const fields={'Имя и фамилия':name,'Трек':track,'Дата прохождения':date,
-    'Мини-тест 1':miniResults['q1-fb']?(miniResults['q1-fb'].correct?'✓':'✗'):'—',
-    'Мини-тест 2':miniResults['q2-fb']?(miniResults['q2-fb'].correct?'✓':'✗'):'—',
-    'Мини-тест 3':miniResults['q3-fb']?(miniResults['q3-fb'].correct?'✓':'✗'):'—',
-    'Итоговый тест':score,'Попыток теста':attempts,'Ошибки в тесте':testWrong.length?testWrong.join(', '):'нет','Открытый вопрос':open,
-    'Рефлексия 1':refData[1]||'—','Рефлексия 2':refData[2]||'—',
-    'Рефлексия 3':refData[3]||'—','Рефлексия 4':refData[4]||'—',
-    'Рефлексия 5':refData[5]||'—'};
-  fetch('https://api.airtable.com/v0/'+AIRTABLE_BASE+'/'+AIRTABLE_TABLE,{
-    method:'POST',headers:{'Authorization':'Bearer '+AIRTABLE_TOKEN,'Content-Type':'application/json'},
-    body:JSON.stringify({fields})
+
+  const data={
+    name,track,date,score,attempts,open,
+    mini1:miniResults['q1-fb']?(miniResults['q1-fb'].correct?'✓':'✗'):'—',
+    mini2:miniResults['q2-fb']?(miniResults['q2-fb'].correct?'✓':'✗'):'—',
+    mini3:miniResults['q3-fb']?(miniResults['q3-fb'].correct?'✓':'✗'):'—',
+    errors:testWrong.length?testWrong.join(', '):'нет',
+    r1:refData[1]||'—',r2:refData[2]||'—',
+    r3:refData[3]||'—',r4:refData[4]||'—',r5:refData[5]||'—'
+  };
+
+  // ↓ Вставь сюда свой URL после деплоя Apps Script
+  var SCRIPT_URL = 'ВСТАВЬ_СВОЙ_URL_ЗДЕСЬ';
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(data)
   }).catch(function(){});
 }
 function showFinish(){var m=document.getElementById('finish-msg');if(m)m.style.display='block';}
@@ -404,33 +406,35 @@ window.addEventListener('DOMContentLoaded',()=>{
 function reportHeight(){
   var active = document.querySelector('.screen.active');
   if(!active) return;
-  // Временно показываем, меряем, прячем обратно не нужно —
-  // active уже display:block, просто берём его реальную высоту
-  var h = active.getBoundingClientRect().height || active.offsetHeight;
-  // Если высота меньше viewport — берём viewport (чтобы не прыгало)
+  var h = active.offsetHeight;
   h = Math.max(h, 500);
   window.parent.postMessage({type:'femina-height', height: h}, '*');
 }
 
-// Перехватываем go() — каждый переход между экранами
+// Дебаунс — не чаще чем раз в 300мс
+var _rhTimer = null;
+function reportHeightDebounced(){
+  if(_rhTimer) clearTimeout(_rhTimer);
+  _rhTimer = setTimeout(reportHeight, 300);
+}
+
+// Перехватываем go() — переход между экранами
 var _origGo = window.go;
 window.go = function(id){
   _origGo(id);
-  // Частые замеры сразу после перехода
-  var times = [0, 50, 150, 300, 500, 800, 1200, 2000];
-  times.forEach(function(t){
-    setTimeout(reportHeight, t);
-  });
+  // Сразу и через паузы — на случай если контент рендерится не мгновенно
+  setTimeout(reportHeight, 50);
+  setTimeout(reportHeight, 400);
+  setTimeout(reportHeight, 900);
 };
 
-// Следим за ростом textarea и другими изменениями
+// MutationObserver с дебаунсом — не триггерить на каждый чих
 if(window.MutationObserver){
-  var obs = new MutationObserver(reportHeight);
+  var obs = new MutationObserver(reportHeightDebounced);
   window.addEventListener('DOMContentLoaded', function(){
     obs.observe(document.body, {
       childList: true,
       subtree: true,
-      characterData: true,
       attributes: true,
       attributeFilter: ['style','class']
     });
@@ -438,4 +442,4 @@ if(window.MutationObserver){
 }
 
 window.addEventListener('load', reportHeight);
-window.addEventListener('resize', reportHeight);
+window.addEventListener('resize', reportHeightDebounced);
