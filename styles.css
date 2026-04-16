@@ -248,3 +248,25 @@ input[type=text]::placeholder{color:var(--text-lt);}
   .opt{font-size:13px;padding:10px 12px;}
   .q-fb{font-size:13px;}
 }
+/* Аккуратный контейнер для видео */
+.video-wrap {
+  width: 100%;
+  max-width: 480px;
+  margin: 16px auto;
+  border-radius: var(--r);
+  overflow: hidden;
+  position: relative;
+  /* Пропорции 16:9 для Vimeo/YouTube */
+  padding-bottom: 56.25%; 
+  background: var(--sand);
+}
+
+.video-wrap iframe, 
+.video-wrap video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
