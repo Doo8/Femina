@@ -1418,8 +1418,6 @@ if(window.MutationObserver){
 }
 
 // Постоянная проверка каждые 500мс — страховка для длинных экранов
-setInterval(reportHeight, 500);
-
 window.addEventListener('load', reportHeight);
 window.addEventListener('resize', reportHeightDebounced);
 
