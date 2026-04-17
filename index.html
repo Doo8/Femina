@@ -1379,12 +1379,16 @@ function reportHeight(){
   var active = document.querySelector('.screen.active');
   if(!active) return;
 
-  // Считаем реальную высоту контента внутри активного экрана
-  // scrollHeight даёт полную высоту включая то что не влезло
-  var h = active.scrollHeight;
+  // Временно снимаем min-height:100vh — он искусственно раздувает высоту
+  var prevMinH = active.style.minHeight;
+  active.style.minHeight = '0';
 
-  // НЕ задаём минимум — отдаём точную высоту контента
-  // Tilda сама поставит нужный размер iframe
+  // body.scrollHeight теперь = только контент активного экрана
+  var h = document.body.scrollHeight;
+
+  // Возвращаем min-height обратно
+  active.style.minHeight = prevMinH;
+
   window.parent.postMessage({type:'femina-height', height: h}, '*');
 }
 
