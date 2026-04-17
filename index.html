@@ -1381,33 +1381,32 @@ function reportHeight(){
 
   // Снимаем min-height чтобы не мешала измерению
   active.style.minHeight = '0';
-  // Форсируем перерисовку
-  void active.offsetHeight;
-  // Берём реальную высоту контента
+  void active.offsetHeight; // форсируем перерисовку
   var h = active.scrollHeight;
-  // Возвращаем min-height
-  active.style.minHeight = '';
+  active.style.minHeight = ''; // возвращаем
 
+  if(h < 100) return;
   window.parent.postMessage({type:'femina-height', height: h}, '*');
 }
 
-// Дебаунс 200мс
+// Дебаунс 150мс
 var _rhTimer = null;
 function reportHeightDebounced(){
   if(_rhTimer) clearTimeout(_rhTimer);
-  _rhTimer = setTimeout(reportHeight, 200);
+  _rhTimer = setTimeout(reportHeight, 150);
 }
 
-// Перехватываем go()
+// Перехватываем go() — переход между экранами
 var _origGo = window.go;
 window.go = function(id){
   _origGo(id);
-  setTimeout(reportHeight, 50);
-  setTimeout(reportHeight, 300);
-  setTimeout(reportHeight, 700);
+  // Серия замеров после перехода — контент может рендериться постепенно
+  [50, 200, 500, 1000, 2000, 3000].forEach(function(t){
+    setTimeout(reportHeight, t);
+  });
 };
 
-// MutationObserver — следим за изменениями контента
+// MutationObserver — ловим любые изменения DOM
 if(window.MutationObserver){
   var obs = new MutationObserver(reportHeightDebounced);
   window.addEventListener('DOMContentLoaded', function(){
@@ -1417,6 +1416,9 @@ if(window.MutationObserver){
     });
   });
 }
+
+// Постоянная проверка каждые 500мс — страховка для длинных экранов
+setInterval(reportHeight, 500);
 
 window.addEventListener('load', reportHeight);
 window.addEventListener('resize', reportHeightDebounced);
