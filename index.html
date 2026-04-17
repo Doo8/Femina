@@ -1378,37 +1378,39 @@ window.addEventListener('DOMContentLoaded',()=>{
 function reportHeight(){
   var active = document.querySelector('.screen.active');
   if(!active) return;
-  var h = active.offsetHeight;
-  h = Math.max(h, 500);
+
+  // Считаем реальную высоту контента внутри активного экрана
+  // scrollHeight даёт полную высоту включая то что не влезло
+  var h = active.scrollHeight;
+
+  // НЕ задаём минимум — отдаём точную высоту контента
+  // Tilda сама поставит нужный размер iframe
   window.parent.postMessage({type:'femina-height', height: h}, '*');
 }
 
-// Дебаунс — не чаще чем раз в 300мс
+// Дебаунс 200мс
 var _rhTimer = null;
 function reportHeightDebounced(){
   if(_rhTimer) clearTimeout(_rhTimer);
-  _rhTimer = setTimeout(reportHeight, 300);
+  _rhTimer = setTimeout(reportHeight, 200);
 }
 
-// Перехватываем go() — переход между экранами
+// Перехватываем go()
 var _origGo = window.go;
 window.go = function(id){
   _origGo(id);
-  // Сразу и через паузы — на случай если контент рендерится не мгновенно
   setTimeout(reportHeight, 50);
-  setTimeout(reportHeight, 400);
-  setTimeout(reportHeight, 900);
+  setTimeout(reportHeight, 300);
+  setTimeout(reportHeight, 700);
 };
 
-// MutationObserver с дебаунсом — не триггерить на каждый чих
+// MutationObserver — следим за изменениями контента
 if(window.MutationObserver){
   var obs = new MutationObserver(reportHeightDebounced);
   window.addEventListener('DOMContentLoaded', function(){
     obs.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['style','class']
+      childList: true, subtree: true,
+      attributes: true, attributeFilter: ['style','class']
     });
   });
 }
